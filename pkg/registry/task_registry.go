@@ -2,7 +2,8 @@ package registry
 
 import (
 	"encoding/json"
-	. "github.com/GoogleCloudPlatform/kubernetes/pkg/api"
+	"fmt"
+	. "github.com/learnk8s/xiabernetes/pkg/types"
 )
 
 type TaskRegistry struct {
@@ -21,6 +22,8 @@ func (t *TaskRegistry) Create(name string) {
 
 func (t *TaskRegistry) Extract(data []byte) interface{} {
 	task := Task{}
+	fmt.Printf("in data:\n %v\n", string(data))
 	json.Unmarshal(data, &task)
+	fmt.Printf("in Extract:\n %v\n", task)
 	return task
 }

@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0a91a7b-3f71-4496-9030-38844b1e8182" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/cmd/xiaberctl/xiaberctl.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/xiaberctl/xiaberctl.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/apiserver/apiserver.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/apiserver/apiserver.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/registry/task_registry.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/registry/task_registry.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/registry/win_file_registry.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/registry/win_file_registry.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/types/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/types/types.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

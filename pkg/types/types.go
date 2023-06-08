@@ -1,26 +1,27 @@
 package types
 
 type JSONBase struct {
-	ID string `id,omitempty`
+	ID string `json:"id,omitempty"`
 }
 type Task struct {
-	labels       map[string]string `labels,omitempty`
-	desiredState TaskState         `desiredState,omitempty`
+	JSONBase
+	Labels       map[string]string `json:"labels,omitempty"`
+	DesiredState TaskState         `json:"desiredState,omitempty"`
 }
 
 type TaskState struct {
-	manifest ContainerManifest `manifest,omitempty`
+	Manifest ContainerManifest `json:"manifest,omitempty"`
 }
 
 type ContainerManifest struct {
-	containers []Container `containers,omitempty`
+	Containers []Container `json:"containers,omitempty"`
 }
 type Container struct {
-	image string `image,omitempty`
-	ports []Port `ports,omitempty`
+	Image string `json:"image,omitempty"`
+	Ports []Port `json:"ports,omitempty"`
 }
 
 type Port struct {
-	containerPort int `containerPort`
-	hostPort      int `hostPort`
+	ContainerPort int `json:"containerPort,omitempty"`
+	HostPort      int `json:"hostPort,omitempty"`
 }
