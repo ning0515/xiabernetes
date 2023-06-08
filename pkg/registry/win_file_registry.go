@@ -10,5 +10,6 @@ func MakeWinRegistry() *WinRegistry {
 }
 
 func (w *WinRegistry) CreateTask(name string) {
-	os.Create(name + ".txt")
+	os.MkdirAll("../../storagepath/task", 0755)
+	os.WriteFile("../../storagepath/task/"+name+".txt", []byte("Hello, Gophers!"), 0660)
 }
