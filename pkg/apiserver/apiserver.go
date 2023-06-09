@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type ApiServer struct {
@@ -12,22 +13,26 @@ type ApiServer struct {
 }
 
 type RESTStorage interface {
-	Create(name string)
+	Create(interface{})
 	Extract(data []byte) interface{}
-}
-
-func (s *ApiServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	//path := r.URL.Path
-	//resource := strings.Split(path, "/")
-	//w.Write([]byte(resource[1]))
-	//s.storage["tasks"].Extract(r.GetBody)
-	task, _ := ioutil.ReadAll(r.Body)
-	req, _ := json.MarshalIndent(s.storage["tasks"].Extract(task), "", "  ")
-	fmt.Printf("%v", string(req))
 }
 
 func New(storage map[string]RESTStorage) *ApiServer {
 	return &ApiServer{
 		storage: storage,
 	}
+}
+
+func (s *ApiServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.Method)
+	path := r.URL.Path
+	fmt.Println(path)
+	resource := strings.Split(path, "/")
+	fmt.Println(resource[1])
+	//w.Write([]byte(resource[1]))
+	data, _ := ioutil.ReadAll(r.Body)
+	task := s.storage[resource[1]].Extract(data)
+	req, _ := json.MarshalIndent(s.storage[resource[1]].Extract(data), "", "  ")
+	fmt.Printf("%v", string(req))
+	s.storage[resource[1]].Create(task)
 }

@@ -16,8 +16,9 @@ func MakeTaskRegistry(storage TaskStorage) *TaskRegistry {
 	}
 }
 
-func (t *TaskRegistry) Create(name string) {
-	t.storage.CreateTask(name)
+func (t *TaskRegistry) Create(task interface{}) {
+	newTask := task.(Task)
+	t.storage.CreateTask(newTask)
 }
 
 func (t *TaskRegistry) Extract(data []byte) interface{} {

@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var address *string = flag.String("a", "127.0.0.1:8000", "Apiserver's endpoint")
+var address *string = flag.String("a", "http://127.0.0.1:8000", "Apiserver's endpoint")
 var file *string = flag.String("f", "", "The path of the config file")
 
 func usage() {
@@ -16,22 +16,26 @@ func usage() {
 }
 func main() {
 	flag.Parse()
-	//println(*file)
-	data, err := os.ReadFile(*file)
-	//println(string(data))
-	if err != nil {
-		println(err)
-		return
+	if flag.NArg() < 2 {
+		usage()
 	}
-
-	req := xiaberctl.RequestWithBody(data, "POST")
-	client := &http.Client{}
-	client.Do(req)
-	//config, _ := json.Marshal(data)
-	//type aaa interface{}
-	//var bbb aaa
-	//fmt.Printf("%v\n", string(config))
-	//json.Unmarshal(config, &bbb)
-	//fmt.Println(bbb)
+	method := flag.Arg(0)
+	url := *address
+	switch method {
+	case "create":
+		{
+			url += flag.Arg(1)
+			data, err := os.ReadFile(*file)
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
+			req := xiaberctl.RequestWithBody(data, url, "POST")
+			client := &http.Client{}
+			client.Do(req)
+		}
+	}
+	println(*address)
+	println(flag.NArg())
 
 }
