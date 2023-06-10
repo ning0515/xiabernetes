@@ -14,11 +14,12 @@ func MakeWinRegistry() *WinRegistry {
 	return &WinRegistry{}
 }
 
-func (w *WinRegistry) CreateTask(task types.Task) {
+func (w *WinRegistry) CreateTask(task types.Task, node string) {
 	data, err := json.MarshalIndent(task, "", "    ")
 	if err != nil {
 		log.Fatal(err)
 	}
-	os.MkdirAll("../../storagepath/task", 0755)
-	os.WriteFile("../../storagepath/task/"+task.ID+".txt", data, 0660)
+	dir := "../../storagepath/hosts/" + node + "/task/"
+	os.MkdirAll(dir, 0755)
+	os.WriteFile(dir+task.ID+".txt", data, 0660)
 }

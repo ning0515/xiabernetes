@@ -9,3 +9,12 @@
 
 
 目前还是在模仿K8S第一版开源的代码，持续学习中。。。
+
+
+# 快速开始
+启动APIserver
+go run .\apiserver.go -nodes "1.1.1.1"
+
+执行xiaberctl命令
+
+go run xiaberctl.go -a "http://127.0.0.1:8001" -f "../../template/createtask.json" create /tasks

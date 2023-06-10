@@ -8,8 +8,10 @@ import (
 	"os"
 )
 
-var address *string = flag.String("a", "http://127.0.0.1:8000", "Apiserver's endpoint")
-var file *string = flag.String("f", "", "The path of the config file")
+var (
+	address = flag.String("a", "http://127.0.0.1:8000", "Apiserver's endpoint")
+	file    = flag.String("f", "", "The path of the config file")
+)
 
 func usage() {
 	log.Fatal("Usage:xiaberctl -a <address> [-f file.json][-p <hostPort>:<containerPort> <method> <path>]")
