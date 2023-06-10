@@ -31,8 +31,8 @@ func (s *ApiServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(resource[1])
 	//w.Write([]byte(resource[1]))
 	data, _ := ioutil.ReadAll(r.Body)
-	task := s.storage[resource[1]].Extract(data)
+	object := s.storage[resource[1]].Extract(data)
 	req, _ := json.MarshalIndent(s.storage[resource[1]].Extract(data), "", "  ")
 	fmt.Printf("%v", string(req))
-	s.storage[resource[1]].Create(task)
+	s.storage[resource[1]].Create(object)
 }

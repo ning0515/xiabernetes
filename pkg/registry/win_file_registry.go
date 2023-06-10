@@ -23,3 +23,13 @@ func (w *WinRegistry) CreateTask(task types.Task, node string) {
 	os.MkdirAll(dir, 0755)
 	os.WriteFile(dir+task.ID+".txt", data, 0660)
 }
+
+func (w *WinRegistry) CreateController(controller types.ReplicateController) {
+	data, err := json.MarshalIndent(controller, "", "    ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	dir := "../../storagepath/controllers/"
+	os.MkdirAll(dir, 0755)
+	os.WriteFile(dir+controller.ID+".txt", data, 0660)
+}

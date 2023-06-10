@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/learnk8s/xiabernetes/pkg/apiserver"
 	"github.com/learnk8s/xiabernetes/pkg/registry"
 	"github.com/learnk8s/xiabernetes/pkg/scheduler"
@@ -18,19 +17,17 @@ var (
 )
 
 func init() {
-	fmt.Sprint(1)
 	flag.Var(&nodeList, "nodes", "List of nodes")
-	fmt.Sprint(nodeList)
 }
 func main() {
-	fmt.Sprint(nodeList)
 	flag.Parse()
 	var storage = map[string]apiserver.RESTStorage{}
 	winRegistry := registry.MakeWinRegistry()
 	//增加Scheduler就修改这里
 	if *specifyScheduler == "random" {
 		storage = map[string]apiserver.RESTStorage{
-			"tasks": registry.MakeTaskRegistry(winRegistry, scheduler.MakeRandomScheduler(nodeList)),
+			"tasks":               registry.MakeTaskRegistry(winRegistry, scheduler.MakeRandomScheduler(nodeList)),
+			"replicateController": registry.MakeControllerRegistry(winRegistry),
 		}
 	} else {
 		storage = map[string]apiserver.RESTStorage{

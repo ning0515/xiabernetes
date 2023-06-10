@@ -25,3 +25,20 @@ type Port struct {
 	ContainerPort int `json:"containerPort,omitempty"`
 	HostPort      int `json:"hostPort,omitempty"`
 }
+
+type ReplicateController struct {
+	JSONBase
+	Labels       map[string]string        `json:"labels,omitempty"`
+	DesiredState ReplicateControllerState `json:"desiredState,omitempty"`
+}
+
+type ReplicateControllerState struct {
+	Replicas      int               `json:"replicas,omitempty"`
+	ReplicasInSet map[string]string `json:"replicasInSet,omitempty"`
+	TaskTemplate  TaskTemplate      `json:"taskTemplate,omitempty"`
+}
+
+type TaskTemplate struct {
+	DesiredState TaskState         `json:"desiredState,omitempty"`
+	Labels       map[string]string `json:"labels,omitempty"`
+}

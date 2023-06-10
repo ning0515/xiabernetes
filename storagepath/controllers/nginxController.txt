@@ -1,0 +1,32 @@
+{
+    "id": "nginxController",
+    "labels": {
+        "name": "nginx"
+    },
+    "desiredState": {
+        "replicas": 2,
+        "replicasInSet": {
+            "name": "nginx"
+        },
+        "taskTemplate": {
+            "desiredState": {
+                "manifest": {
+                    "containers": [
+                        {
+                            "image": "dockerfile/nginx",
+                            "ports": [
+                                {
+                                    "containerPort": 80,
+                                    "hostPort": 8080
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            "labels": {
+                "name": "nginx"
+            }
+        }
+    }
+}
