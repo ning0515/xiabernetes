@@ -21,6 +21,10 @@ func (c *ControllerRegistry) Create(controller interface{}) {
 	c.storage.CreateController(newController)
 }
 
+func (c *ControllerRegistry) List() {
+	c.storage.ListController()
+}
+
 func (c *ControllerRegistry) Extract(data []byte) interface{} {
 	controller := types.ReplicateController{}
 	fmt.Printf("in data:\n %v\n", string(data))

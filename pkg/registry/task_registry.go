@@ -24,6 +24,10 @@ func (t *TaskRegistry) Create(task interface{}) {
 	t.storage.CreateTask(newTask, t.scheduler.Schedule(newTask))
 }
 
+func (t *TaskRegistry) List() {
+	t.storage.ListTask()
+}
+
 func (t *TaskRegistry) Extract(data []byte) interface{} {
 	task := Task{}
 	fmt.Printf("in data:\n %v\n", string(data))

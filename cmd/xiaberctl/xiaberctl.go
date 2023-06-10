@@ -24,6 +24,13 @@ func main() {
 	method := flag.Arg(0)
 	url := *address
 	switch method {
+	case "list":
+		{
+			url += flag.Arg(1)
+			req, _ := http.NewRequest("GET", url, nil)
+			client := &http.Client{}
+			client.Do(req)
+		}
 	case "create":
 		{
 			url += flag.Arg(1)
@@ -39,5 +46,4 @@ func main() {
 	}
 	println(*address)
 	println(flag.NArg())
-
 }
