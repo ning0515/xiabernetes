@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -15,7 +16,7 @@ type ApiServer struct {
 type RESTStorage interface {
 	Create(interface{})
 	Extract(data []byte) interface{}
-	List()
+	List() interface{}
 }
 
 func New(storage map[string]RESTStorage) *ApiServer {
@@ -33,7 +34,8 @@ func (s *ApiServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		{
-			s.storage[resource[1]].List()
+			res := s.storage[resource[1]].List()
+			s.write(200, res, w)
 		}
 	case "POST":
 		{
@@ -45,4 +47,14 @@ func (s *ApiServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+}
+
+func (server *ApiServer) write(statusCode int, object interface{}, w http.ResponseWriter) {
+	w.WriteHeader(statusCode)
+	output, err := json.MarshalIndent(object, "", "    ")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	w.Write(output)
 }

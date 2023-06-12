@@ -24,8 +24,12 @@ func (t *TaskRegistry) Create(task interface{}) {
 	t.storage.CreateTask(newTask, t.scheduler.Schedule(newTask))
 }
 
-func (t *TaskRegistry) List() {
-	t.storage.ListTask()
+func (t *TaskRegistry) List() interface{} {
+	var result TaskList
+	result = TaskList{
+		Items: t.storage.ListTask(),
+	}
+	return result
 }
 
 func (t *TaskRegistry) Extract(data []byte) interface{} {

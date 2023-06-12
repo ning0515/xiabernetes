@@ -31,7 +31,8 @@ func main() {
 		}
 	} else {
 		storage = map[string]apiserver.RESTStorage{
-			"tasks": registry.MakeTaskRegistry(winRegistry, scheduler.MakeRandomScheduler(nodeList)),
+			"tasks":               registry.MakeTaskRegistry(winRegistry, scheduler.MakeRandomScheduler(nodeList)),
+			"replicateController": registry.MakeControllerRegistry(winRegistry),
 		}
 	}
 	s := http.Server{

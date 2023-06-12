@@ -3,6 +3,12 @@ package types
 type JSONBase struct {
 	ID string `json:"id,omitempty"`
 }
+
+type TaskList struct {
+	JSONBase
+	Items []Task `json:"items" yaml:"items,omitempty"`
+}
+
 type Task struct {
 	JSONBase
 	Labels       map[string]string `json:"labels,omitempty"`

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/learnk8s/xiabernetes/pkg/xiaberctl"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -29,7 +30,10 @@ func main() {
 			url += flag.Arg(1)
 			req, _ := http.NewRequest("GET", url, nil)
 			client := &http.Client{}
-			client.Do(req)
+			response, _ := client.Do(req)
+			defer response.Body.Close()
+			body, _ := ioutil.ReadAll(response.Body)
+			println(string(body))
 		}
 	case "create":
 		{

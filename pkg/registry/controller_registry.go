@@ -21,8 +21,8 @@ func (c *ControllerRegistry) Create(controller interface{}) {
 	c.storage.CreateController(newController)
 }
 
-func (c *ControllerRegistry) List() {
-	c.storage.ListController()
+func (c *ControllerRegistry) List() interface{} {
+	return c.storage.ListController()
 }
 
 func (c *ControllerRegistry) Extract(data []byte) interface{} {
