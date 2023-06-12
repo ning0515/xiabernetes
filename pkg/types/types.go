@@ -1,21 +1,22 @@
 package types
 
 type JSONBase struct {
-	ID string `json:"id,omitempty"`
+	Kind string `json:"kind,omitempty"`
+	ID   string `json:"id,omitempty"`
 }
 
-type TaskList struct {
+type PodList struct {
 	JSONBase
-	Items []Task `json:"items" yaml:"items,omitempty"`
+	Items []Pod `json:"items" yaml:"items,omitempty"`
 }
 
-type Task struct {
+type Pod struct {
 	JSONBase
 	Labels       map[string]string `json:"labels,omitempty"`
-	DesiredState TaskState         `json:"desiredState,omitempty"`
+	DesiredState PodState          `json:"desiredState,omitempty"`
 }
 
-type TaskState struct {
+type PodState struct {
 	Manifest ContainerManifest `json:"manifest,omitempty"`
 }
 
@@ -38,13 +39,18 @@ type ReplicateController struct {
 	DesiredState ReplicateControllerState `json:"desiredState,omitempty"`
 }
 
+type ReplicateControllerList struct {
+	JSONBase
+	Items []ReplicateController `json:"items,omitempty" yaml:"items,omitempty"`
+}
+
 type ReplicateControllerState struct {
 	Replicas      int               `json:"replicas,omitempty"`
 	ReplicasInSet map[string]string `json:"replicasInSet,omitempty"`
-	TaskTemplate  TaskTemplate      `json:"taskTemplate,omitempty"`
+	PodTemplate   PodTemplate       `json:"podTemplate,omitempty"`
 }
 
-type TaskTemplate struct {
-	DesiredState TaskState         `json:"desiredState,omitempty"`
+type PodTemplate struct {
+	DesiredState PodState          `json:"desiredState,omitempty"`
 	Labels       map[string]string `json:"labels,omitempty"`
 }

@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	address = flag.String("a", "http://127.0.0.1:8000", "Apiserver's endpoint")
+	address = flag.String("a", "http://127.0.0.1:8001", "Apiserver's endpoint")
 	file    = flag.String("f", "", "The path of the config file")
 )
 

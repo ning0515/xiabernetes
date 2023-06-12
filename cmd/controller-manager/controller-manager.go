@@ -26,9 +26,9 @@ func main() {
 	client := client.Client{
 		Host: "http://" + *apiServer,
 	}
-	client.ListTasks(label)
+	client.ListPods(label)
 	controllerManager := registry.MakeReplicateManager(*registry.MakeWinRegistry(), scheduler.MakeRandomScheduler(nodeList))
 
-	go util.Forever(func() { controllerManager.Sync() }, 20*time.Second)
+	go util.Forever(func() { controllerManager.Sync() }, 1*time.Second)
 	select {}
 }

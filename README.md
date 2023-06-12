@@ -17,4 +17,4 @@ go run .\apiserver.go -nodes "1.1.1.1"
 
 执行xiaberctl命令
 
-go run xiaberctl.go -a "http://127.0.0.1:8001" -f "../../template/createtask.json" create /tasks
+go run xiaberctl.go -a "http://127.0.0.1:8001" -f "../../template/createpod.json" create /pods

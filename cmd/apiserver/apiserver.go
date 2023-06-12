@@ -26,12 +26,12 @@ func main() {
 	//增加Scheduler就修改这里
 	if *specifyScheduler == "random" {
 		storage = map[string]apiserver.RESTStorage{
-			"tasks":               registry.MakeTaskRegistry(winRegistry, scheduler.MakeRandomScheduler(nodeList)),
+			"pods":                registry.MakePodRegistry(winRegistry, scheduler.MakeRandomScheduler(nodeList)),
 			"replicateController": registry.MakeControllerRegistry(winRegistry),
 		}
 	} else {
 		storage = map[string]apiserver.RESTStorage{
-			"tasks":               registry.MakeTaskRegistry(winRegistry, scheduler.MakeRandomScheduler(nodeList)),
+			"pods":                registry.MakePodRegistry(winRegistry, scheduler.MakeRandomScheduler(nodeList)),
 			"replicateController": registry.MakeControllerRegistry(winRegistry),
 		}
 	}

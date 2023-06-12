@@ -6,7 +6,7 @@ import (
 )
 
 type Scheduler interface {
-	Schedule(task types.Task) string
+	Schedule(pod types.Pod) string
 }
 
 type RandomScheduler struct {
@@ -17,6 +17,6 @@ func MakeRandomScheduler(nodes []string) *RandomScheduler {
 	return &RandomScheduler{nodes: nodes}
 }
 
-func (rs *RandomScheduler) Schedule(task types.Task) string {
+func (rs *RandomScheduler) Schedule(pod types.Pod) string {
 	return rs.nodes[rand.Intn(len(rs.nodes))]
 }

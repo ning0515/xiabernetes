@@ -23,7 +23,10 @@ func (c *ControllerRegistry) Create(controller interface{}) {
 }
 
 func (c *ControllerRegistry) List(*url.URL) interface{} {
-	return c.storage.ListController()
+	result := types.ReplicateControllerList{
+		JSONBase: types.JSONBase{Kind: "cluster#replicationControllerList"},
+		Items:    c.storage.ListController()}
+	return result
 }
 
 func (c *ControllerRegistry) Extract(data []byte) interface{} {

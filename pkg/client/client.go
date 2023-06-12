@@ -10,7 +10,7 @@ import (
 )
 
 type ClientInterface interface {
-	ListTasks(map[string]string) types.TaskList
+	ListPods(map[string]string) types.PodList
 }
 
 type Client struct {
@@ -18,18 +18,18 @@ type Client struct {
 	httpClient *http.Client
 }
 
-func (c Client) ListTasks(label map[string]string) types.TaskList {
-	tasks := types.TaskList{}
-	url := c.Host + "/tasks"
+func (c Client) ListPods(label map[string]string) types.PodList {
+	pods := types.PodList{}
+	url := c.Host + "/pods"
 	url = url + "?labels=" + LabelToString(label)
 	req, _ := http.NewRequest("GET", url, nil)
 	client := &http.Client{}
 	response, _ := client.Do(req)
 	defer response.Body.Close()
 	body, _ := io.ReadAll(response.Body)
-	json.Unmarshal(body, tasks)
+	json.Unmarshal(body, pods)
 	println(string(body))
-	return types.TaskList{}
+	return types.PodList{}
 
 }
 
@@ -43,6 +43,9 @@ func LabelToString(label map[string]string) string {
 
 func StringToLabel(labelString string) map[string]string {
 	label := map[string]string{}
+	if len(labelString) == 0 {
+		return label
+	}
 	parts := strings.Split(labelString, ",")
 	for _, part := range parts {
 		keyValue := strings.Split(part, "=")

@@ -26,20 +26,20 @@ func (rm *ReplicationManager) Sync() {
 }
 
 func (rm *ReplicationManager) syncReplicationController(replicateController types.ReplicateController) {
-	taskList := rm.registry.ListTask(&replicateController.Labels)
-	diff := len(taskList) - replicateController.DesiredState.Replicas
+	podList := rm.registry.ListPod(&replicateController.Labels)
+	diff := len(podList) - replicateController.DesiredState.Replicas
 	if diff < 0 {
 		diff *= -1
 		fmt.Printf("Too few replicas, creating %d\n", diff)
 		for i := 0; i < diff; i++ {
-			task := types.Task{
+			pod := types.Pod{
 				JSONBase: types.JSONBase{
 					ID: fmt.Sprintf("%x", rand.Int()),
 				},
-				DesiredState: replicateController.DesiredState.TaskTemplate.DesiredState,
-				Labels:       replicateController.DesiredState.TaskTemplate.Labels,
+				DesiredState: replicateController.DesiredState.PodTemplate.DesiredState,
+				Labels:       replicateController.DesiredState.PodTemplate.Labels,
 			}
-			rm.registry.CreateTask(task, rm.scheduler.Schedule(task))
+			rm.registry.CreatePod(pod, rm.scheduler.Schedule(pod))
 		}
 	} else if diff > 0 {
 		fmt.Print("Too many replicas, deleting")

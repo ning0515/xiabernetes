@@ -17,30 +17,30 @@ func MakeWinRegistry() *WinRegistry {
 	return &WinRegistry{}
 }
 
-func (w *WinRegistry) CreateTask(task types.Task, node string) {
-	data, err := json.MarshalIndent(task, "", "    ")
+func (w *WinRegistry) CreatePod(pod types.Pod, node string) {
+	data, err := json.MarshalIndent(pod, "", "    ")
 	if err != nil {
 		log.Fatal(err)
 	}
-	dir := "../../storagepath/hosts/" + node + "/task/"
+	dir := "../../storagepath/hosts/" + node + "/pod/"
 	os.MkdirAll(dir, 0755)
-	os.WriteFile(dir+task.ID+".txt", data, 0660)
+	os.WriteFile(dir+pod.ID+".txt", data, 0660)
 }
 
-func (w *WinRegistry) ListTask(label *map[string]string) []types.Task {
-	tasks := []types.Task{}
+func (w *WinRegistry) ListPod(label *map[string]string) []types.Pod {
+	pods := []types.Pod{}
 	dir := "../../storagepath/hosts/"
-	taskList := ListFile(dir)
-	for _, v := range taskList {
-		task := types.Task{}
-		json.Unmarshal(v, &task)
-		if LabelsMatch(task, label) {
-			tasks = append(tasks, task)
+	podList := ListFile(dir)
+	for _, v := range podList {
+		pod := types.Pod{}
+		json.Unmarshal(v, &pod)
+		if LabelsMatch(pod, label) {
+			pods = append(pods, pod)
 		}
 	}
 
-	fmt.Printf("%v\n", tasks)
-	return tasks
+	fmt.Printf("%v\n", pods)
+	return pods
 }
 
 func (w *WinRegistry) CreateController(controller types.ReplicateController) {
@@ -95,20 +95,20 @@ func ListFile(dir string) map[string][]byte {
 	return txtList
 }
 
-func LabelsMatch(task types.Task, label *map[string]string) bool {
+func LabelsMatch(pod types.Pod, label *map[string]string) bool {
 	if label == nil {
 		return true
 	}
 	for key, value := range *label {
-		if !LabelMatch(task, key, value) {
+		if !LabelMatch(pod, key, value) {
 			return false
 		}
 	}
 	return true
 }
 
-func LabelMatch(task types.Task, queryKey, queryValue string) bool {
-	for key, value := range task.Labels {
+func LabelMatch(pod types.Pod, queryKey, queryValue string) bool {
+	for key, value := range pod.Labels {
 		if queryKey == key && queryValue == value {
 			return true
 		}
