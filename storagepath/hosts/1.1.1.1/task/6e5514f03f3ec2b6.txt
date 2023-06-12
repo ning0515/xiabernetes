@@ -1,0 +1,21 @@
+{
+    "id": "6e5514f03f3ec2b6",
+    "labels": {
+        "name": "nginx"
+    },
+    "desiredState": {
+        "manifest": {
+            "containers": [
+                {
+                    "image": "dockerfile/nginx",
+                    "ports": [
+                        {
+                            "containerPort": 80,
+                            "hostPort": 8080
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
