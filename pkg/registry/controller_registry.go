@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/learnk8s/xiabernetes/pkg/types"
+	"net/url"
 )
 
 type ControllerRegistry struct {
@@ -21,7 +22,7 @@ func (c *ControllerRegistry) Create(controller interface{}) {
 	c.storage.CreateController(newController)
 }
 
-func (c *ControllerRegistry) List() interface{} {
+func (c *ControllerRegistry) List(*url.URL) interface{} {
 	return c.storage.ListController()
 }
 

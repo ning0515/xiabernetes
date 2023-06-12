@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -16,7 +17,7 @@ type ApiServer struct {
 type RESTStorage interface {
 	Create(interface{})
 	Extract(data []byte) interface{}
-	List() interface{}
+	List(url *url.URL) interface{}
 }
 
 func New(storage map[string]RESTStorage) *ApiServer {
@@ -34,7 +35,7 @@ func (s *ApiServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		{
-			res := s.storage[resource[1]].List()
+			res := s.storage[resource[1]].List(r.URL)
 			s.write(200, res, w)
 		}
 	case "POST":

@@ -27,14 +27,16 @@ func (w *WinRegistry) CreateTask(task types.Task, node string) {
 	os.WriteFile(dir+task.ID+".txt", data, 0660)
 }
 
-func (w *WinRegistry) ListTask() []types.Task {
+func (w *WinRegistry) ListTask(label *map[string]string) []types.Task {
 	tasks := []types.Task{}
 	dir := "../../storagepath/hosts/"
 	taskList := ListFile(dir)
 	for _, v := range taskList {
 		task := types.Task{}
 		json.Unmarshal(v, &task)
-		tasks = append(tasks, task)
+		if LabelsMatch(task, label) {
+			tasks = append(tasks, task)
+		}
 	}
 
 	fmt.Printf("%v\n", tasks)
@@ -91,4 +93,25 @@ func ListFile(dir string) map[string][]byte {
 		fmt.Printf("错误：%v\n", err)
 	}
 	return txtList
+}
+
+func LabelsMatch(task types.Task, label *map[string]string) bool {
+	if label == nil {
+		return true
+	}
+	for key, value := range *label {
+		if !LabelMatch(task, key, value) {
+			return false
+		}
+	}
+	return true
+}
+
+func LabelMatch(task types.Task, queryKey, queryValue string) bool {
+	for key, value := range task.Labels {
+		if queryKey == key && queryValue == value {
+			return true
+		}
+	}
+	return false
 }
