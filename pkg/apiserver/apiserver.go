@@ -16,8 +16,8 @@ type ApiServer struct {
 
 type RESTStorage interface {
 	Create(interface{})
-	Extract(data []byte) interface{}
-	List(url *url.URL) interface{}
+	Extract([]byte) interface{}
+	List(*url.URL) interface{}
 }
 
 func New(storage map[string]RESTStorage) *ApiServer {

@@ -6,7 +6,7 @@ import (
 )
 
 type Scheduler interface {
-	Schedule(pod types.Pod) string
+	Schedule(types.Pod) string
 }
 
 type RandomScheduler struct {

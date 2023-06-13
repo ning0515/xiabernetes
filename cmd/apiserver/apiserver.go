@@ -11,7 +11,7 @@ import (
 
 var (
 	nodeList         util.StringList
-	port             = flag.Uint("p", 8001, "Listing port")
+	port             = flag.Uint("p", 8002, "Listing port")
 	address          = flag.String("a", "127.0.0.1", "The address of api server")
 	specifyScheduler = flag.String("scheduler", "random", "Specify a scheduler")
 )
@@ -36,7 +36,7 @@ func main() {
 		}
 	}
 	s := http.Server{
-		Addr:    "127.0.0.1:8001",
+		Addr:    "127.0.0.1:8002",
 		Handler: apiserver.New(storage),
 	}
 	s.ListenAndServe()

@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/learnk8s/xiabernetes/pkg/xiaberctl"
 	"io"
 	"log"
@@ -10,7 +11,7 @@ import (
 )
 
 var (
-	address = flag.String("a", "http://127.0.0.1:8001", "Apiserver's endpoint")
+	address = flag.String("a", "http://127.0.0.1:8002", "Apiserver's endpoint")
 	file    = flag.String("f", "", "The path of the config file")
 )
 
@@ -22,6 +23,7 @@ func main() {
 	if flag.NArg() < 2 {
 		usage()
 	}
+	printer := &xiaberctl.HumanReadablePrinter{}
 	method := flag.Arg(0)
 	url := *address
 	switch method {
@@ -33,7 +35,8 @@ func main() {
 			response, _ := client.Do(req)
 			defer response.Body.Close()
 			body, _ := io.ReadAll(response.Body)
-			println(string(body))
+			fmt.Println(string(body))
+			printer.Print(string(body), os.Stdout)
 		}
 	case "create":
 		{

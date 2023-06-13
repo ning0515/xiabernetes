@@ -18,3 +18,10 @@ go run .\apiserver.go -nodes "1.1.1.1"
 执行xiaberctl命令
 
 go run xiaberctl.go -a "http://127.0.0.1:8001" -f "../../template/createpod.json" create /pods
+
+
+#TODO 
+
+1.打印不太标准
+2.给apiserver发的path不对时，没有正确的日志，影响调试
+3.没有写单元测试
