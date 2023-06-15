@@ -1,5 +1,5 @@
 {
-  "id": "php",
+  "id": "php11",
   "desiredState": {
     "manifest": {
       "containers": [{

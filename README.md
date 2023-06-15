@@ -12,6 +12,8 @@
 
 
 # 快速开始
+
+1.创建pod
 启动APIserver
 go run .\apiserver.go -nodes "1.1.1.1"
 
@@ -19,6 +21,9 @@ go run .\apiserver.go -nodes "1.1.1.1"
 
 go run xiaberctl.go -a "http://127.0.0.1:8001" -f "../../template/createpod.json" create /pods
 
+2.列出pod  
+
+go run xiaberctl.go list /pods
 
 #TODO 
 
