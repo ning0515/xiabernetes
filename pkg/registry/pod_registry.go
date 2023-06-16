@@ -3,10 +3,9 @@ package registry
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/learnk8s/xiabernetes/pkg/client"
+	"github.com/learnk8s/xiabernetes/pkg/labels"
 	"github.com/learnk8s/xiabernetes/pkg/scheduler"
 	. "github.com/learnk8s/xiabernetes/pkg/types"
-	"net/url"
 )
 
 type PodRegistry struct {
@@ -26,13 +25,8 @@ func (t *PodRegistry) Create(pod interface{}) {
 	t.storage.CreatePod(newPod, t.scheduler.Schedule(newPod))
 }
 
-func (t *PodRegistry) List(url *url.URL) interface{} {
+func (t *PodRegistry) List(query labels.Query) interface{} {
 	var result PodList
-	var query *map[string]string
-	if url != nil {
-		queryMap := client.StringToLabel(url.Query().Get("labels"))
-		query = &queryMap
-	}
 	result = PodList{
 		Items: t.storage.ListPod(query),
 	}

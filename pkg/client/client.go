@@ -11,6 +11,7 @@ import (
 
 type ClientInterface interface {
 	ListPods(map[string]string) types.PodList
+	ListController() types.ReplicateControllerList
 }
 
 type Client struct {
@@ -30,6 +31,11 @@ func (c Client) ListPods(label map[string]string) types.PodList {
 	json.Unmarshal(body, pods)
 	println(string(body))
 	return types.PodList{}
+
+}
+func (c Client) ListController() types.ReplicateControllerList {
+
+	return types.ReplicateControllerList{}
 
 }
 

@@ -3,10 +3,10 @@ package apiserver
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/learnk8s/xiabernetes/pkg/labels"
 	"io"
 	"log"
 	"net/http"
-	"net/url"
 	"strings"
 )
 
@@ -17,7 +17,7 @@ type ApiServer struct {
 type RESTStorage interface {
 	Create(interface{})
 	Extract([]byte) interface{}
-	List(*url.URL) interface{}
+	List(query labels.Query) interface{}
 }
 
 func New(storage map[string]RESTStorage) *ApiServer {
@@ -35,7 +35,7 @@ func (s *ApiServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		{
-			res := s.storage[resource[1]].List(r.URL)
+			res := s.storage[resource[1]].List(labels.ParseQuery(r.URL.Query().Get("labels")))
 			s.write(200, res, w)
 		}
 	case "POST":

@@ -3,8 +3,8 @@ package registry
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/learnk8s/xiabernetes/pkg/labels"
 	"github.com/learnk8s/xiabernetes/pkg/types"
-	"net/url"
 )
 
 type ControllerRegistry struct {
@@ -22,10 +22,10 @@ func (c *ControllerRegistry) Create(controller interface{}) {
 	c.storage.CreateController(newController)
 }
 
-func (c *ControllerRegistry) List(*url.URL) interface{} {
+func (c *ControllerRegistry) List(query labels.Query) interface{} {
 	result := types.ReplicateControllerList{
 		JSONBase: types.JSONBase{Kind: "cluster#replicationControllerList"},
-		Items:    c.storage.ListController()}
+		Items:    c.storage.ListController(query)}
 	return result
 }
 

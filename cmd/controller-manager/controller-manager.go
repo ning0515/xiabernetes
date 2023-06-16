@@ -27,7 +27,7 @@ func main() {
 		Host: "http://" + *apiServer,
 	}
 	client.ListPods(label)
-	controllerManager := registry.MakeReplicateManager(*registry.MakeWinRegistry(), scheduler.MakeRandomScheduler(nodeList))
+	controllerManager := registry.MakeReplicateManager(*registry.MakeWinRegistry(), scheduler.MakeRandomScheduler(nodeList), client)
 
 	go util.Forever(func() { controllerManager.Sync() }, 1*time.Second)
 	select {}

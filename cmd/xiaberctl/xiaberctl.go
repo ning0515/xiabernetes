@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	address = flag.String("a", "http://127.0.0.1:8001", "Apiserver's endpoint")
-	file    = flag.String("f", "", "The path of the config file")
+	address  = flag.String("a", "http://127.0.0.1:8001", "Apiserver's endpoint")
+	file     = flag.String("f", "", "The path of the config file")
+	selector = flag.String("l", "", "label")
 )
 
 func usage() {
@@ -48,6 +49,9 @@ func main() {
 	switch method {
 	case "list":
 		{
+			if len(*selector) > 0 {
+				url = url + "?labels=" + *selector
+			}
 			req, _ := http.NewRequest("GET", url, nil)
 			client := &http.Client{}
 			response, err := client.Do(req)

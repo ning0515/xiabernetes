@@ -3,6 +3,7 @@ package registry
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/learnk8s/xiabernetes/pkg/labels"
 	"github.com/learnk8s/xiabernetes/pkg/types"
 	"log"
 	"os"
@@ -27,14 +28,14 @@ func (w *WinRegistry) CreatePod(pod types.Pod, node string) {
 	os.WriteFile(dir+pod.ID+".txt", data, 0660)
 }
 
-func (w *WinRegistry) ListPod(label *map[string]string) []types.Pod {
+func (w *WinRegistry) ListPod(label labels.Query) []types.Pod {
 	pods := []types.Pod{}
 	dir := "../../storagepath/hosts/"
 	podList := ListFile(dir)
 	for _, v := range podList {
 		pod := types.Pod{}
 		json.Unmarshal(v, &pod)
-		if LabelsMatch(pod, label) {
+		if label.Matches(labels.Set(pod.Labels)) {
 			pods = append(pods, pod)
 		}
 	}
@@ -53,16 +54,17 @@ func (w *WinRegistry) CreateController(controller types.ReplicateController) {
 	os.WriteFile(dir+controller.ID+".txt", data, 0660)
 }
 
-func (w *WinRegistry) ListController() []types.ReplicateController {
+func (w *WinRegistry) ListController(label labels.Query) []types.ReplicateController {
 	controllers := []types.ReplicateController{}
 	dir := "../../storagepath/controllers/"
 	controllerList := ListFile(dir)
 	for _, v := range controllerList {
 		controller := types.ReplicateController{}
 		json.Unmarshal(v, &controller)
-		controllers = append(controllers, controller)
+		if label.Matches(labels.Set(controller.Labels)) {
+			controllers = append(controllers, controller)
+		}
 	}
-
 	fmt.Printf("%v\n", controllers)
 	return controllers
 }
@@ -71,9 +73,9 @@ func ListFile(dir string) map[string][]byte {
 	txtList := make(map[string][]byte, 10)
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
+			fmt.Printf("%v", path)
 			return err
 		}
-
 		if !info.IsDir() {
 			data, err := os.ReadFile(path)
 			if err != nil {
@@ -85,10 +87,8 @@ func ListFile(dir string) map[string][]byte {
 			txtList[ID] = data
 			//fmt.Printf("%s", txtList)
 		}
-
 		return nil
 	})
-
 	if err != nil {
 		fmt.Printf("错误：%v\n", err)
 	}

@@ -2,6 +2,7 @@ package registry
 
 import (
 	"fmt"
+	"github.com/learnk8s/xiabernetes/pkg/client"
 	"github.com/learnk8s/xiabernetes/pkg/scheduler"
 	"github.com/learnk8s/xiabernetes/pkg/types"
 	"math/rand"
@@ -10,24 +11,26 @@ import (
 type ReplicationManager struct {
 	registry  WinRegistry
 	scheduler scheduler.Scheduler
+	client    client.ClientInterface
 }
 
-func MakeReplicateManager(registry WinRegistry, scheduler scheduler.Scheduler) *ReplicationManager {
+func MakeReplicateManager(registry WinRegistry, scheduler scheduler.Scheduler, client client.ClientInterface) *ReplicationManager {
 	return &ReplicationManager{
 		registry:  registry,
 		scheduler: scheduler,
+		client:    client,
 	}
 }
 func (rm *ReplicationManager) Sync() {
-	replicateControllers := rm.registry.ListController()
-	for _, replicateController := range replicateControllers {
+	replicateControllers := rm.client.ListController()
+	for _, replicateController := range replicateControllers.Items {
 		rm.syncReplicationController(replicateController)
 	}
 }
 
 func (rm *ReplicationManager) syncReplicationController(replicateController types.ReplicateController) {
-	podList := rm.registry.ListPod(&replicateController.Labels)
-	diff := len(podList) - replicateController.DesiredState.Replicas
+	podList := rm.client.ListPods(replicateController.Labels)
+	diff := len(podList.Items) - replicateController.DesiredState.Replicas
 	if diff < 0 {
 		diff *= -1
 		fmt.Printf("Too few replicas, creating %d\n", diff)

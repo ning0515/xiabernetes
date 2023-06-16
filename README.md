@@ -30,3 +30,5 @@ go run xiaberctl.go list /pods
 1.打印不太标准
 2.给apiserver发的path不对时，没有正确的日志，影响调试
 3.没有写单元测试
+4.client需要完善
+5.相对路径依赖cmd运行时所在的目录，需要修改
