@@ -23,14 +23,18 @@ func MakeReplicateManager(registry WinRegistry, scheduler scheduler.Scheduler, c
 }
 func (rm *ReplicationManager) Sync() {
 	replicateControllers := rm.client.ListController()
+	//fmt.Println(replicateControllers)
 	for _, replicateController := range replicateControllers.Items {
+		//fmt.Println("2223")
 		rm.syncReplicationController(replicateController)
 	}
 }
 
 func (rm *ReplicationManager) syncReplicationController(replicateController types.ReplicateController) {
+	//fmt.Println("2224")
 	podList := rm.client.ListPods(replicateController.Labels)
 	diff := len(podList.Items) - replicateController.DesiredState.Replicas
+	fmt.Println(diff)
 	if diff < 0 {
 		diff *= -1
 		fmt.Printf("Too few replicas, creating %d\n", diff)

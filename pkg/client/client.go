@@ -16,7 +16,7 @@ type ClientInterface interface {
 
 type Client struct {
 	Host       string
-	httpClient *http.Client
+	HttpClient *http.Client
 }
 
 func (c Client) ListPods(label map[string]string) types.PodList {
@@ -24,19 +24,30 @@ func (c Client) ListPods(label map[string]string) types.PodList {
 	url := c.Host + "/pods"
 	url = url + "?labels=" + LabelToString(label)
 	req, _ := http.NewRequest("GET", url, nil)
-	client := &http.Client{}
-	response, _ := client.Do(req)
+	response, _ := c.HttpClient.Do(req)
 	defer response.Body.Close()
 	body, _ := io.ReadAll(response.Body)
-	json.Unmarshal(body, pods)
+	err := json.Unmarshal(body, &pods)
+	if err != nil {
+		fmt.Println("json unmarshal error=", err)
+	}
 	println(string(body))
-	return types.PodList{}
+	return pods
 
 }
 func (c Client) ListController() types.ReplicateControllerList {
-
-	return types.ReplicateControllerList{}
-
+	controllers := types.ReplicateControllerList{}
+	url := c.Host + "/replicateController"
+	req, _ := http.NewRequest("GET", url, nil)
+	response, _ := c.HttpClient.Do(req)
+	defer response.Body.Close()
+	body, _ := io.ReadAll(response.Body)
+	err := json.Unmarshal(body, &controllers)
+	if err != nil {
+		fmt.Println("json unmarshal error=", err)
+	}
+	println(string(body))
+	return controllers
 }
 
 func LabelToString(label map[string]string) string {
