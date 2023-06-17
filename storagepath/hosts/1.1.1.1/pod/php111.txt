@@ -1,0 +1,21 @@
+{
+    "id": "php111",
+    "labels": {
+        "name": "foo"
+    },
+    "desiredState": {
+        "manifest": {
+            "containers": [
+                {
+                    "image": "dockerfile/nginx",
+                    "ports": [
+                        {
+                            "containerPort": 80,
+                            "hostPort": 8080
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

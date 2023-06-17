@@ -3,6 +3,7 @@ package registry
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/learnk8s/xiabernetes/pkg/apiserver"
 	"github.com/learnk8s/xiabernetes/pkg/labels"
 	"github.com/learnk8s/xiabernetes/pkg/scheduler"
 	. "github.com/learnk8s/xiabernetes/pkg/types"
@@ -20,9 +21,13 @@ func MakePodRegistry(storage PodStorage, scheduler scheduler.Scheduler) *PodRegi
 	}
 }
 
-func (t *PodRegistry) Create(pod interface{}) {
+func (t *PodRegistry) Create(pod interface{}) <-chan interface{} {
 	newPod := pod.(Pod)
-	t.storage.CreatePod(newPod, t.scheduler.Schedule(newPod))
+	return apiserver.MakeAsync(func() interface{} {
+		t.storage.CreatePod(newPod, t.scheduler.Schedule(newPod))
+		fmt.Println("创建完成")
+		return newPod
+	})
 }
 
 func (t *PodRegistry) List(query labels.Query) interface{} {

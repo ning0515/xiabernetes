@@ -3,6 +3,7 @@ package registry
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/learnk8s/xiabernetes/pkg/apiserver"
 	"github.com/learnk8s/xiabernetes/pkg/labels"
 	"github.com/learnk8s/xiabernetes/pkg/types"
 )
@@ -17,9 +18,13 @@ func MakeControllerRegistry(storage ControllerStorage) *ControllerRegistry {
 	}
 }
 
-func (c *ControllerRegistry) Create(controller interface{}) {
+func (c *ControllerRegistry) Create(controller interface{}) <-chan interface{} {
 	newController := controller.(types.ReplicateController)
 	c.storage.CreateController(newController)
+	return apiserver.MakeAsync(func() interface{} {
+		c.storage.CreateController(newController)
+		return newController
+	})
 }
 
 func (c *ControllerRegistry) List(query labels.Query) interface{} {

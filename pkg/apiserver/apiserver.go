@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/learnk8s/xiabernetes/pkg/labels"
+	"github.com/learnk8s/xiabernetes/pkg/util"
 	"io"
 	"log"
 	"net/http"
@@ -15,11 +16,19 @@ type ApiServer struct {
 }
 
 type RESTStorage interface {
-	Create(interface{})
+	Create(interface{}) <-chan interface{}
 	Extract([]byte) interface{}
 	List(query labels.Query) interface{}
 }
 
+func MakeAsync(fn func() interface{}) <-chan interface{} {
+	channel := make(chan interface{}, 1)
+	go func() {
+		defer util.HandleCrash()
+		channel <- fn()
+	}()
+	return channel
+}
 func New(storage map[string]RESTStorage) *ApiServer {
 	return &ApiServer{
 		storage: storage,
@@ -44,7 +53,9 @@ func (s *ApiServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			object := s.storage[resource[1]].Extract(data)
 			req, _ := json.MarshalIndent(s.storage[resource[1]].Extract(data), "", "  ")
 			fmt.Printf("%v", string(req))
+			fmt.Println("检验异步效果：提交了创建")
 			s.storage[resource[1]].Create(object)
+			fmt.Println("检验异步效果：主线程继续向下走")
 		}
 	}
 
