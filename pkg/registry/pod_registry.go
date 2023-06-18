@@ -24,6 +24,7 @@ func MakePodRegistry(storage PodStorage, scheduler scheduler.Scheduler) *PodRegi
 func (t *PodRegistry) Create(pod interface{}) <-chan interface{} {
 	newPod := pod.(Pod)
 	return apiserver.MakeAsync(func() interface{} {
+		//time.Sleep(10 * time.Second)
 		t.storage.CreatePod(newPod, t.scheduler.Schedule(newPod))
 		fmt.Println("创建完成")
 		return newPod

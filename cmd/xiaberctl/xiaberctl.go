@@ -61,7 +61,7 @@ func main() {
 			}
 			defer response.Body.Close()
 			body, _ := io.ReadAll(response.Body)
-			//fmt.Println(string(body))
+			fmt.Println(string(body))
 			printer.Print(string(body), os.Stdout)
 		}
 	case "create":

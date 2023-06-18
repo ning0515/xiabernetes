@@ -54,3 +54,28 @@ type PodTemplate struct {
 	DesiredState PodState          `json:"desiredState,omitempty"`
 	Labels       map[string]string `json:"labels,omitempty"`
 }
+
+type Status struct {
+	JSONBase `json:",inline" yaml:",inline"`
+	// One of: "success", "failure", "working" (for operations not yet completed)
+	// TODO: if "working", include an operation identifier so final status can be
+	// checked.
+	Status  string `json:"status,omitempty" yaml:"status,omitempty"`
+	Details string `json:"details,omitempty" yaml:"details,omitempty"`
+}
+
+const (
+	StatusSuccess = "success"
+	StatusFailure = "failure"
+	StatusWorking = "working"
+)
+
+type ServerOp struct {
+	JSONBase `yaml:",inline" json:",inline"`
+}
+
+// Operation list, as delivered to API clients.
+type ServerOpList struct {
+	JSONBase `yaml:",inline" json:",inline"`
+	Items    []ServerOp `yaml:"items,omitempty" json:"items,omitempty"`
+}
