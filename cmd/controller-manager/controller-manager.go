@@ -6,7 +6,6 @@ import (
 	"github.com/learnk8s/xiabernetes/pkg/registry"
 	"github.com/learnk8s/xiabernetes/pkg/scheduler"
 	"github.com/learnk8s/xiabernetes/pkg/util"
-	"net/http"
 	"time"
 )
 
@@ -24,10 +23,11 @@ func main() {
 	flag.Parse()
 	nodeList = append(nodeList, "1.1.1.1")
 	label := map[string]string{"name": "foo"}
-	client := client.Client{
-		Host:       "http://" + *apiServer,
-		HttpClient: &http.Client{},
-	}
+	//client := client.Client{
+	//	Host:       "http://" + *apiServer,
+	//	HttpClient: &http.Client{},
+	//}
+	client := client.New("http://" + *apiServer)
 	client.ListPods(label)
 	controllerManager := registry.MakeReplicateManager(*registry.MakeWinRegistry(), scheduler.MakeRandomScheduler(nodeList), client)
 

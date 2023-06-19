@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/learnk8s/xiabernetes/pkg/client"
 	"github.com/learnk8s/xiabernetes/pkg/xiaberctl"
 	"log"
 	"os"
@@ -50,7 +51,7 @@ func main() {
 	case "create":
 		verb = "POST"
 	}
-	s := xiaberctl.New(*address)
+	s := client.New(*address)
 	r := s.Verb(verb).
 		Path(storage).
 		Query(*selector)

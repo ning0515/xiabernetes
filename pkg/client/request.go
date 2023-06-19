@@ -1,4 +1,4 @@
-package xiaberctl
+package client
 
 import (
 	"bytes"
@@ -10,25 +10,35 @@ import (
 	"time"
 )
 
-type Server struct {
-	rawUrl string
-}
-
-func New(serverUrl string) *Server {
-	return &Server{
-		rawUrl: serverUrl,
-	}
-}
-func (s *Server) Verb(verb string) *Request {
+func (c *Client) Verb(verb string) *Request {
 	return &Request{
 		verb: verb,
-		s:    s,
+		c:    c,
 		path: "/",
 	}
 }
 
+func (c *Client) Post() *Request {
+	return c.Verb("POST")
+}
+
+// Begin a PUT request.
+func (c *Client) Put() *Request {
+	return c.Verb("PUT")
+}
+
+// Begin a GET request.
+func (c *Client) Get() *Request {
+	return c.Verb("GET")
+}
+
+// Begin a DELETE request.
+func (c *Client) Delete() *Request {
+	return c.Verb("DELETE")
+}
+
 type Request struct {
-	s    *Server
+	c    *Client
 	err  error
 	verb string
 	path string
@@ -65,7 +75,7 @@ func (r *Request) Body(obj []byte) *Request {
 
 func (r *Request) Do() ([]byte, error) {
 	query := url.Values{}
-	finalUrl := r.s.rawUrl + r.path
+	finalUrl := r.c.host + r.path
 	if r.query != "" {
 		query.Add("labels", r.query)
 	}
