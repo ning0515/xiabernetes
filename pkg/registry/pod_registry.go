@@ -3,10 +3,10 @@ package registry
 import (
 	"encoding/json"
 	"fmt"
+	. "github.com/learnk8s/xiabernetes/pkg/api"
 	"github.com/learnk8s/xiabernetes/pkg/apiserver"
 	"github.com/learnk8s/xiabernetes/pkg/labels"
 	"github.com/learnk8s/xiabernetes/pkg/scheduler"
-	. "github.com/learnk8s/xiabernetes/pkg/types"
 )
 
 type PodRegistry struct {

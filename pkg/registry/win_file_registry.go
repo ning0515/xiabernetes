@@ -3,8 +3,8 @@ package registry
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/learnk8s/xiabernetes/pkg/api"
 	"github.com/learnk8s/xiabernetes/pkg/labels"
-	"github.com/learnk8s/xiabernetes/pkg/types"
 	"log"
 	"os"
 	"path/filepath"
@@ -18,7 +18,7 @@ func MakeWinRegistry() *WinRegistry {
 	return &WinRegistry{}
 }
 
-func (w *WinRegistry) CreatePod(pod types.Pod, node string) {
+func (w *WinRegistry) CreatePod(pod api.Pod, node string) {
 	data, err := json.MarshalIndent(pod, "", "    ")
 	if err != nil {
 		log.Fatal(err)
@@ -28,12 +28,12 @@ func (w *WinRegistry) CreatePod(pod types.Pod, node string) {
 	os.WriteFile(dir+pod.ID+".txt", data, 0660)
 }
 
-func (w *WinRegistry) ListPod(label labels.Query) []types.Pod {
-	pods := []types.Pod{}
+func (w *WinRegistry) ListPod(label labels.Query) []api.Pod {
+	pods := []api.Pod{}
 	dir := "../../storagepath/hosts/"
 	podList := ListFile(dir)
 	for _, v := range podList {
-		pod := types.Pod{}
+		pod := api.Pod{}
 		json.Unmarshal(v, &pod)
 		if label.Matches(labels.Set(pod.Labels)) {
 			pods = append(pods, pod)
@@ -44,7 +44,7 @@ func (w *WinRegistry) ListPod(label labels.Query) []types.Pod {
 	return pods
 }
 
-func (w *WinRegistry) CreateController(controller types.ReplicateController) {
+func (w *WinRegistry) CreateController(controller api.ReplicateController) {
 	data, err := json.MarshalIndent(controller, "", "    ")
 	if err != nil {
 		log.Fatal(err)
@@ -54,12 +54,12 @@ func (w *WinRegistry) CreateController(controller types.ReplicateController) {
 	os.WriteFile(dir+controller.ID+".txt", data, 0660)
 }
 
-func (w *WinRegistry) ListController(label labels.Query) []types.ReplicateController {
-	controllers := []types.ReplicateController{}
+func (w *WinRegistry) ListController(label labels.Query) []api.ReplicateController {
+	controllers := []api.ReplicateController{}
 	dir := "../../storagepath/controllers/"
 	controllerList := ListFile(dir)
 	for _, v := range controllerList {
-		controller := types.ReplicateController{}
+		controller := api.ReplicateController{}
 		json.Unmarshal(v, &controller)
 		if label.Matches(labels.Set(controller.Labels)) {
 			controllers = append(controllers, controller)
@@ -95,7 +95,7 @@ func ListFile(dir string) map[string][]byte {
 	return txtList
 }
 
-func LabelsMatch(pod types.Pod, label *map[string]string) bool {
+func LabelsMatch(pod api.Pod, label *map[string]string) bool {
 	if label == nil {
 		return true
 	}
@@ -107,7 +107,7 @@ func LabelsMatch(pod types.Pod, label *map[string]string) bool {
 	return true
 }
 
-func LabelMatch(pod types.Pod, queryKey, queryValue string) bool {
+func LabelMatch(pod api.Pod, queryKey, queryValue string) bool {
 	for key, value := range pod.Labels {
 		if queryKey == key && queryValue == value {
 			return true

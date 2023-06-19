@@ -3,7 +3,7 @@ package xiaberctl
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/learnk8s/xiabernetes/pkg/types"
+	"github.com/learnk8s/xiabernetes/pkg/api"
 	"io"
 	"strings"
 )
@@ -22,14 +22,14 @@ func PrintHeader(columnNames []string, w io.Writer) {
 }
 
 func (hp *HumanReadablePrinter) PrintPod(data string, w io.Writer) {
-	var pods types.PodList
+	var pods api.PodList
 	json.Unmarshal([]byte(data), &pods)
 	for _, v := range pods.Items {
 		fmt.Fprintf(w, "%s\t%v\t%s\n", v.ID, v.DesiredState.Manifest, v.Labels)
 	}
 }
 func (hp *HumanReadablePrinter) PrintController(data string, w io.Writer) {
-	var controllers types.ReplicateControllerList
+	var controllers api.ReplicateControllerList
 	json.Unmarshal([]byte(data), &controllers)
 	for _, v := range controllers.Items {
 		fmt.Fprintf(w, "%s\t%v\t%s\n", v.ID, v.DesiredState.Replicas, v.Labels)

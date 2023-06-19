@@ -1,7 +1,7 @@
 package apiserver
 
 import (
-	"github.com/learnk8s/xiabernetes/pkg/types"
+	"github.com/learnk8s/xiabernetes/pkg/api"
 	"github.com/learnk8s/xiabernetes/pkg/util"
 	"sort"
 	"strconv"
@@ -69,7 +69,7 @@ func (op *Operation) WaitFor(timeout time.Duration) {
 		op.notify <- true
 	}
 }
-func (ops *Operations) List() types.ServerOpList {
+func (ops *Operations) List() api.ServerOpList {
 	ops.lock.Lock()
 	defer ops.lock.Unlock()
 
@@ -78,9 +78,9 @@ func (ops *Operations) List() types.ServerOpList {
 		ids = append(ids, id)
 	}
 	sort.StringSlice(ids).Sort()
-	ol := types.ServerOpList{}
+	ol := api.ServerOpList{}
 	for _, id := range ids {
-		ol.Items = append(ol.Items, types.ServerOp{JSONBase: types.JSONBase{ID: id}})
+		ol.Items = append(ol.Items, api.ServerOp{JSONBase: api.JSONBase{ID: id}})
 	}
 	//fmt.Println(1111)
 	//fmt.Print("%v", ol)
@@ -96,8 +96,8 @@ func (op *Operation) StatusOrResult() (description interface{}, finished bool) {
 	defer op.lock.Unlock()
 
 	if op.finished == nil {
-		return types.Status{
-			Status:  types.StatusWorking,
+		return api.Status{
+			Status:  api.StatusWorking,
 			Details: op.ID,
 		}, false
 	}

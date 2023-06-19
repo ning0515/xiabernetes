@@ -2,13 +2,13 @@ package xiaberctl
 
 import (
 	"encoding/json"
+	"github.com/learnk8s/xiabernetes/pkg/api"
 	"reflect"
 )
-import "github.com/learnk8s/xiabernetes/pkg/types"
 
 var storageToType = map[string]reflect.Type{
-	"pods":                reflect.TypeOf(types.Pod{}),
-	"replicateController": reflect.TypeOf(types.ReplicateController{}),
+	"pods":                reflect.TypeOf(api.Pod{}),
+	"replicateController": reflect.TypeOf(api.ReplicateController{}),
 }
 
 func ToWireFormat(data []byte, storage string) []byte {

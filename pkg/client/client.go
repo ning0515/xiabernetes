@@ -4,18 +4,18 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/learnk8s/xiabernetes/pkg/types"
+	"github.com/learnk8s/xiabernetes/pkg/api"
 	"net/http"
 	"strings"
 )
 
 type ClientInterface interface {
-	ListPods(map[string]string) types.PodList
-	ListController() types.ReplicateControllerList
+	ListPods(map[string]string) api.PodList
+	ListController() api.ReplicateControllerList
 }
 
 type StatusErr struct {
-	Status types.Status
+	Status api.Status
 }
 
 func (s *StatusErr) Error() string {
@@ -40,9 +40,9 @@ func New(host string) *Client {
 	}
 }
 
-func (c *Client) ListPods(label map[string]string) types.PodList {
+func (c *Client) ListPods(label map[string]string) api.PodList {
 
-	pods := types.PodList{}
+	pods := api.PodList{}
 	body, _ := c.Get().Path("pods").Query(LabelToString(label)).Do()
 	err := json.Unmarshal(body, &pods)
 	if err != nil {
@@ -58,8 +58,8 @@ func (c *Client) ListPods(label map[string]string) types.PodList {
 	//body, _ := io.ReadAll(response.Body)
 
 }
-func (c *Client) ListController() types.ReplicateControllerList {
-	controllers := types.ReplicateControllerList{}
+func (c *Client) ListController() api.ReplicateControllerList {
+	controllers := api.ReplicateControllerList{}
 	body, _ := c.Get().Path("replicateController").Do()
 	err := json.Unmarshal(body, &controllers)
 	if err != nil {

@@ -2,9 +2,9 @@ package registry
 
 import (
 	"fmt"
+	"github.com/learnk8s/xiabernetes/pkg/api"
 	"github.com/learnk8s/xiabernetes/pkg/client"
 	"github.com/learnk8s/xiabernetes/pkg/scheduler"
-	"github.com/learnk8s/xiabernetes/pkg/types"
 	"math/rand"
 )
 
@@ -30,7 +30,7 @@ func (rm *ReplicationManager) Sync() {
 	}
 }
 
-func (rm *ReplicationManager) syncReplicationController(replicateController types.ReplicateController) {
+func (rm *ReplicationManager) syncReplicationController(replicateController api.ReplicateController) {
 	//fmt.Println("2224")
 	podList := rm.client.ListPods(replicateController.Labels)
 	diff := len(podList.Items) - replicateController.DesiredState.Replicas
@@ -39,8 +39,8 @@ func (rm *ReplicationManager) syncReplicationController(replicateController type
 		diff *= -1
 		fmt.Printf("Too few replicas, creating %d\n", diff)
 		for i := 0; i < diff; i++ {
-			pod := types.Pod{
-				JSONBase: types.JSONBase{
+			pod := api.Pod{
+				JSONBase: api.JSONBase{
 					ID: fmt.Sprintf("%x", rand.Int()),
 				},
 				DesiredState: replicateController.DesiredState.PodTemplate.DesiredState,
