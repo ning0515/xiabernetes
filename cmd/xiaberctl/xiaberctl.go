@@ -4,9 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/learnk8s/xiabernetes/pkg/xiaberctl"
-	"io"
 	"log"
-	"net/http"
 	"os"
 	"strings"
 )
@@ -45,32 +43,49 @@ func main() {
 	printer := &xiaberctl.HumanReadablePrinter{}
 	method := flag.Arg(0)
 	storage := strings.Trim(flag.Arg(1), "/")
-	url := *address + "/" + storage
+	verb := ""
 	switch method {
-	case "list":
-		{
-			if len(*selector) > 0 {
-				url = url + "?labels=" + *selector
-			}
-			req, _ := http.NewRequest("GET", url, nil)
-			client := &http.Client{}
-			response, err := client.Do(req)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			defer response.Body.Close()
-			body, _ := io.ReadAll(response.Body)
-			fmt.Println(string(body))
-			printer.Print(string(body), os.Stdout)
-		}
+	case "get", "list":
+		verb = "GET"
 	case "create":
-		{
-			req := xiaberctl.RequestWithBody(readConfig(storage), url, "POST")
-			client := &http.Client{}
-			client.Do(req)
-		}
+		verb = "POST"
 	}
+	s := xiaberctl.New(*address)
+	r := s.Verb(verb).
+		Path(storage).
+		Query(*selector)
+	if method == "create" {
+		r.Body(readConfig(storage))
+	}
+	response, _ := r.Do()
+	fmt.Println(string(response))
+	printer.Print(string(response), os.Stdout)
+
+	//switch method {
+	//case "list":
+	//	{
+	//		if len(*selector) > 0 {
+	//			url = url + "?labels=" + *selector
+	//		}
+	//		req, _ := http.NewRequest("GET", url, nil)
+	//		client := &http.Client{}
+	//		response, err := client.Do(req)
+	//		if err != nil {
+	//			fmt.Println(err)
+	//			return
+	//		}
+	//		defer response.Body.Close()
+	//		body, _ := io.ReadAll(response.Body)
+	//		fmt.Println(string(body))
+	//		printer.Print(string(body), os.Stdout)
+	//	}
+	//case "create":
+	//	{
+	//		req := xiaberctl.RequestWithBody(readConfig(storage), url, "POST")
+	//		client := &http.Client{}
+	//		client.Do(req)
+	//	}
+	//}
 	//println(*address)
 	//println(flag.NArg())
 }
