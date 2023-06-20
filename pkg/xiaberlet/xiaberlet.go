@@ -1,11 +1,15 @@
 package xiaberlet
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/learnk8s/xiabernetes/pkg/api"
 	"github.com/learnk8s/xiabernetes/pkg/labels"
 	"github.com/learnk8s/xiabernetes/pkg/registry"
 	"github.com/learnk8s/xiabernetes/pkg/util"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -17,20 +21,21 @@ type Xiaberlet struct {
 func (xl *Xiaberlet) RunXiaberlet() {
 	winChannel := make(chan []api.ContainerManifest)
 	go util.Forever(func() { xl.WatchWin(winChannel) }, 10*time.Second)
-	//xl.
+	xl.RunSyncLoop(winChannel)
 }
 
 func (xl *Xiaberlet) RunSyncLoop(winChannel <-chan []api.ContainerManifest) {
-	//var lastWin []api.ContainerManifest
-	//for {
-	//	select {
-	//	case manifests := <-winChannel:
-	//		lastWin = manifests
-	//	case <-time.After(xl.SyncFrequency):
-	//	}
-	//	manifests := append([]api.ContainerManifest{},lastWin...)
-	//
-	//}
+	var lastWin []api.ContainerManifest
+	for {
+		select {
+		case manifests := <-winChannel:
+			lastWin = manifests
+		case <-time.After(xl.SyncFrequency):
+		}
+		manifests := append([]api.ContainerManifest{}, lastWin...)
+		xl.SyncManifests(manifests)
+
+	}
 }
 
 type SyncHandler interface {
@@ -38,8 +43,64 @@ type SyncHandler interface {
 }
 
 func (xl *Xiaberlet) SyncManifests(config []api.ContainerManifest) error {
-	fmt.Printf("Desired:")
+	fmt.Printf("Desired:%#v", config)
+	desired := map[string]bool{}
+	for _, manifest := range config {
+		for _, element := range manifest.Containers {
+			var exists bool
+			exists, foundName := xl.ContainerExists(manifest, element)
+			if !exists {
+				name := xl.RunContainer(&manifest, &element)
+				desired[name] = true
+			} else {
+				fmt.Printf("found container %s", foundName)
+			}
+			desired[foundName] = true
+		}
+	}
+
 	return nil
+}
+
+func (xl *Xiaberlet) RunContainer(manifest *api.ContainerManifest, container *api.Container) (name string) {
+	name = fmt.Sprintf("%s--%s", container.Name, manifest.ID)
+	dir := "../../storagepath/fakedockerpath/"
+	data, err := json.Marshal(container)
+	if err != nil {
+		fmt.Printf("run container error ,err = %#v", err)
+	}
+	os.MkdirAll(dir, 0755)
+	os.WriteFile(dir+name+".txt", data, 0660)
+	return name
+}
+func (xl *Xiaberlet) ContainerExists(manifests api.ContainerManifest, container api.Container) (exists bool, foundName string) {
+	containers := xl.ListContainers()
+	for _, name := range containers {
+		if name == container.Name+"--"+manifests.ID {
+			return true, name
+		}
+	}
+	return false, ""
+}
+func (xl *Xiaberlet) ListContainers() []string {
+	result := []string{}
+	dir := "../../storagepath/fakedockerpath/"
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			fmt.Printf("%v", path)
+			return err
+		}
+		if !info.IsDir() {
+			index := strings.LastIndexAny(path, "\\")
+			ID := path[index+1 : len(path)-4]
+			result = append(result, ID)
+		}
+		return nil
+	})
+	if err != nil {
+		fmt.Printf("错误：%v\n", err)
+	}
+	return result
 }
 
 func (xl *Xiaberlet) WatchWin(changeChannel chan<- []api.ContainerManifest) {

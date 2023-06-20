@@ -21,9 +21,12 @@ type PodState struct {
 }
 
 type ContainerManifest struct {
+	ID         string      `json:"id,omitempty"`
 	Containers []Container `json:"containers,omitempty"`
 }
 type Container struct {
+	Name  string `json:"name,omitempty"`
+	ID    string `json:"id,omitempty"`
 	Image string `json:"image,omitempty"`
 	Ports []Port `json:"ports,omitempty"`
 }

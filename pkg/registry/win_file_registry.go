@@ -12,22 +12,51 @@ import (
 )
 
 type WinRegistry struct {
+	manifestFactory ManifestFactory
 }
 
 func MakeWinRegistry() *WinRegistry {
-	return &WinRegistry{}
+	return &WinRegistry{manifestFactory: &BasicManifestFactory{}}
 }
 
 func (w *WinRegistry) CreatePod(pod api.Pod, node string) {
+	w.runPod(pod, node)
+}
+
+func (w *WinRegistry) runPod(pod api.Pod, machine string) {
+	manifests := w.loadManifests(machine)
 	data, err := json.MarshalIndent(pod, "", "    ")
 	if err != nil {
 		log.Fatal(err)
 	}
-	dir := "../../storagepath/hosts/" + node + "/pod/"
+	dir := "../../storagepath/hosts/" + machine + "/pod/"
 	os.MkdirAll(dir, 0755)
 	os.WriteFile(dir+pod.ID+".txt", data, 0660)
+	manifest := w.manifestFactory.MakeManifest(pod)
+	manifests = append(manifests, manifest)
+	w.updateManifests(machine, manifests)
 }
 
+func (w *WinRegistry) loadManifests(machine string) []api.ContainerManifest {
+	var manifests []api.ContainerManifest
+	dir := "../../storagepath/hosts/" + machine + "/xiaberlet/"
+	data, err := os.ReadFile(dir + "value.txt")
+	if err != nil {
+		fmt.Printf("err load manifest,err=%v", err)
+		manifests = []api.ContainerManifest{}
+	}
+	json.Unmarshal(data, &manifests)
+	return manifests
+}
+func (w *WinRegistry) updateManifests(machine string, manifests []api.ContainerManifest) {
+	dir := "../../storagepath/hosts/" + machine + "/xiaberlet/"
+	data, err := json.Marshal(manifests)
+	if err != nil {
+		fmt.Printf("error update manifests,err = %v", err)
+	}
+	os.MkdirAll(dir, 0755)
+	os.WriteFile(dir+"value.txt", data, 0660)
+}
 func (w *WinRegistry) ListPod(label labels.Query) []api.Pod {
 	pods := []api.Pod{}
 	dir := "../../storagepath/hosts/"
@@ -39,7 +68,6 @@ func (w *WinRegistry) ListPod(label labels.Query) []api.Pod {
 			pods = append(pods, pod)
 		}
 	}
-
 	fmt.Printf("%v\n", pods)
 	return pods
 }
@@ -81,11 +109,9 @@ func ListFile(dir string) map[string][]byte {
 			if err != nil {
 				log.Fatal(err)
 			}
-			//fmt.Println(strings.LastIndexAny(path, "\\"))
 			index := strings.LastIndexAny(path, "\\")
 			ID := path[index+1 : len(path)-4]
 			txtList[ID] = data
-			//fmt.Printf("%s", txtList)
 		}
 		return nil
 	})
