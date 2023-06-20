@@ -74,6 +74,33 @@ func nameAndJSONBase(obj interface{}) (string, *JSONBase, error) {
 	return name, jsonBase.Addr().Interface().(*JSONBase), nil
 }
 
+func Decode(data []byte) (interface{}, error) {
+	findKind := struct {
+		Kind string `json:"kind,omitempty" yaml:"kind,omitempty"`
+	}{}
+	err := json.Unmarshal(data, &findKind)
+	if err != nil {
+		fmt.Errorf("Unmarshal error=%v", err)
+		return nil, err
+	}
+	objType, found := knownTypes[findKind.Kind]
+	if !found {
+		return nil, fmt.Errorf("%v is not a known type", findKind.Kind)
+	}
+	obj := reflect.New(objType).Interface()
+	err = json.Unmarshal(data, obj)
+	if err != nil {
+		fmt.Errorf("Unmarshal error=%v", err)
+		return nil, err
+	}
+	_, jsonBase, err := nameAndJSONBase(obj)
+	if err != nil {
+		return nil, err
+	}
+	// Don't leave these set. Track type with go's type.
+	jsonBase.Kind = ""
+	return obj, nil
+}
 func DecodeInto(data []byte, obj interface{}) error {
 	err := yaml.Unmarshal(data, obj)
 	if err != nil {
