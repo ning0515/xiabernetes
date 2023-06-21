@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/learnk8s/xiabernetes/pkg/api"
-	"github.com/learnk8s/xiabernetes/pkg/labels"
 	"github.com/learnk8s/xiabernetes/pkg/registry"
 	"github.com/learnk8s/xiabernetes/pkg/util"
 	"os"
@@ -43,17 +42,18 @@ type SyncHandler interface {
 }
 
 func (xl *Xiaberlet) SyncManifests(config []api.ContainerManifest) error {
-	fmt.Printf("Desired:%#v", config)
+	fmt.Printf("Desired:%#v\n", config)
 	desired := map[string]bool{}
 	for _, manifest := range config {
 		for _, element := range manifest.Containers {
 			var exists bool
 			exists, foundName := xl.ContainerExists(manifest, element)
+			fmt.Printf("syncManifests exists=%v\n", exists)
 			if !exists {
 				name := xl.RunContainer(&manifest, &element)
 				desired[name] = true
 			} else {
-				fmt.Printf("found container %s", foundName)
+				fmt.Printf("found container %s\n", foundName)
 			}
 			desired[foundName] = true
 		}
@@ -70,7 +70,11 @@ func (xl *Xiaberlet) RunContainer(manifest *api.ContainerManifest, container *ap
 		fmt.Printf("run container error ,err = %#v", err)
 	}
 	os.MkdirAll(dir, 0755)
-	os.WriteFile(dir+name+".txt", data, 0660)
+	fmt.Printf("runContainer dir=%v\n", dir+name+".txt")
+	err = os.WriteFile(dir+name+".txt", data, 0660)
+	if err != nil {
+		fmt.Printf("write error=%v\n", err)
+	}
 	return name
 }
 func (xl *Xiaberlet) ContainerExists(manifests api.ContainerManifest, container api.Container) (exists bool, foundName string) {
@@ -104,10 +108,8 @@ func (xl *Xiaberlet) ListContainers() []string {
 }
 
 func (xl *Xiaberlet) WatchWin(changeChannel chan<- []api.ContainerManifest) {
-	var manifests []api.ContainerManifest
-	newData := xl.FileRegistry.ListPod(labels.ParseQuery(""))
-	for _, v := range newData {
-		manifests = append(manifests, v.DesiredState.Manifest)
-	}
-	changeChannel <- manifests
+	//	var manifests []api.ContainerManifest
+	newData := xl.FileRegistry.LoadManifests("1.1.1.1")
+	//manifests = append(manifests, newData...)
+	changeChannel <- newData
 }

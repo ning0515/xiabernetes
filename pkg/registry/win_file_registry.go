@@ -24,8 +24,8 @@ func (w *WinRegistry) CreatePod(pod api.Pod, node string) {
 }
 
 func (w *WinRegistry) runPod(pod api.Pod, machine string) {
-	manifests := w.loadManifests(machine)
-	data, err := json.MarshalIndent(pod, "", "    ")
+	manifests := w.LoadManifests(machine)
+	data, err := json.MarshalIndent(pod, "", "	")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -33,11 +33,12 @@ func (w *WinRegistry) runPod(pod api.Pod, machine string) {
 	os.MkdirAll(dir, 0755)
 	os.WriteFile(dir+pod.ID+".txt", data, 0660)
 	manifest := w.manifestFactory.MakeManifest(pod)
+	fmt.Printf("runPod manifest=%#v", manifest)
 	manifests = append(manifests, manifest)
 	w.updateManifests(machine, manifests)
 }
 
-func (w *WinRegistry) loadManifests(machine string) []api.ContainerManifest {
+func (w *WinRegistry) LoadManifests(machine string) []api.ContainerManifest {
 	var manifests []api.ContainerManifest
 	dir := "../../storagepath/hosts/" + machine + "/xiaberlet/"
 	data, err := os.ReadFile(dir + "value.txt")
@@ -50,7 +51,7 @@ func (w *WinRegistry) loadManifests(machine string) []api.ContainerManifest {
 }
 func (w *WinRegistry) updateManifests(machine string, manifests []api.ContainerManifest) {
 	dir := "../../storagepath/hosts/" + machine + "/xiaberlet/"
-	data, err := json.Marshal(manifests)
+	data, err := json.MarshalIndent(manifests, "", "	")
 	if err != nil {
 		fmt.Printf("error update manifests,err = %v", err)
 	}
@@ -73,7 +74,7 @@ func (w *WinRegistry) ListPod(label labels.Query) []api.Pod {
 }
 
 func (w *WinRegistry) CreateController(controller api.ReplicateController) {
-	data, err := json.MarshalIndent(controller, "", "    ")
+	data, err := json.MarshalIndent(controller, "", "	")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -73,7 +73,7 @@ func (server *ApiServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		{
 			data, _ := io.ReadAll(r.Body)
 			object := server.storage[resource[1]].Extract(data)
-			req, _ := json.MarshalIndent(server.storage[resource[1]].Extract(data), "", "  ")
+			req, _ := json.MarshalIndent(server.storage[resource[1]].Extract(data), "", "	")
 			fmt.Printf("%v", string(req))
 			fmt.Println("检验异步效果：提交了创建")
 			out := server.storage[resource[1]].Create(object)
