@@ -41,3 +41,5 @@ go run xiaberctl.go list /operations/1
 3.没有写单元测试
 4.client需要完善
 5.相对路径依赖cmd运行时所在的目录，需要修改
+6.PR505 watch 和http chunked还不太会
+7.PR356 对kubulet的重构，修改有点多

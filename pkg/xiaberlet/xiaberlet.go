@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -112,4 +113,36 @@ func (xl *Xiaberlet) WatchWin(changeChannel chan<- []api.ContainerManifest) {
 	newData := xl.FileRegistry.LoadManifests("1.1.1.1")
 	//manifests = append(manifests, newData...)
 	changeChannel <- newData
+}
+
+type podWorkers struct {
+	lock    sync.Mutex
+	workers util.StringSet
+}
+
+func newPodWorkers() podWorkers {
+	return podWorkers{
+		workers: util.NewStringSet(),
+	}
+}
+
+func (self *podWorkers) Run(podFullName string, action func()) {
+	self.lock.Lock()
+	defer self.lock.Unlock()
+
+	// This worker is already running, let it finish.
+	if self.workers.Has(podFullName) {
+		return
+	}
+	self.workers.Insert(podFullName)
+
+	// Run worker async.
+	go func() {
+		defer util.HandleCrash()
+		action()
+
+		self.lock.Lock()
+		defer self.lock.Unlock()
+		self.workers.Delete(podFullName)
+	}()
 }
