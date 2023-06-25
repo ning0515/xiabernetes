@@ -1,4 +1,4 @@
-package api
+package v1beta1
 
 type JSONBase struct {
 	Kind       string `json:"kind,omitempty"`

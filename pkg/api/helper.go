@@ -3,23 +3,40 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/learnk8s/xiabernetes/pkg/api/v1beta1"
 	"gopkg.in/v1/yaml"
 	"reflect"
 )
 
-var knownTypes = map[string]reflect.Type{}
+type ConversionFunc func(input interface{}) (output interface{})
+
+var versionMap = map[string]map[string]reflect.Type{}
+var internalFuncs = map[string]ConversionFunc{}
+var externalFuncs = map[string]ConversionFunc{}
 
 func init() {
-	AddKnownTypes(
+	AddKnownTypes("",
 		PodList{},
 		Pod{},
 		ReplicateController{},
 		ReplicateControllerList{},
 		Status{},
 	)
+	AddKnownTypes("v1beta1",
+		v1beta1.PodList{},
+		v1beta1.Pod{},
+		v1beta1.ReplicateController{},
+		v1beta1.ReplicateControllerList{},
+		v1beta1.Status{},
+	)
 }
 
-func AddKnownTypes(types ...interface{}) {
+func AddKnownTypes(version string, types ...interface{}) {
+	knownTypes, found := versionMap[version]
+	if !found {
+		knownTypes = map[string]reflect.Type{}
+		versionMap[version] = knownTypes
+	}
 	for _, obj := range types {
 		t := reflect.TypeOf(obj)
 		knownTypes[t.Name()] = t
@@ -50,6 +67,7 @@ func prepareEncode(obj interface{}) (*JSONBase, error) {
 	if err != nil {
 		return nil, err
 	}
+	knownTypes := versionMap[jsonBase.APIVersion]
 	if _, contains := knownTypes[name]; !contains {
 		return nil, fmt.Errorf("struct %v won't be unmarshalable because it's not in knownTypes", name)
 	}
@@ -76,13 +94,15 @@ func nameAndJSONBase(obj interface{}) (string, *JSONBase, error) {
 
 func Decode(data []byte) (interface{}, error) {
 	findKind := struct {
-		Kind string `json:"kind,omitempty" yaml:"kind,omitempty"`
+		Kind       string `json:"kind,omitempty" yaml:"kind,omitempty"`
+		APIVersion string `json:"apiVersion,omitempty"`
 	}{}
 	err := json.Unmarshal(data, &findKind)
 	if err != nil {
 		fmt.Errorf("Unmarshal error=%v", err)
 		return nil, err
 	}
+	knownTypes := versionMap[findKind.APIVersion]
 	objType, found := knownTypes[findKind.Kind]
 	if !found {
 		return nil, fmt.Errorf("%v is not a known type", findKind.Kind)
