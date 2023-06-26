@@ -106,13 +106,15 @@ func ListFile(dir string) map[string][]byte {
 			return err
 		}
 		if !info.IsDir() {
-			data, err := os.ReadFile(path)
-			if err != nil {
-				log.Fatal(err)
+			if !strings.Contains(path, "xiaberlet") {
+				data, err := os.ReadFile(path)
+				if err != nil {
+					log.Fatal(err)
+				}
+				index := strings.LastIndexAny(path, "\\")
+				ID := path[index+1 : len(path)-4]
+				txtList[ID] = data
 			}
-			index := strings.LastIndexAny(path, "\\")
-			ID := path[index+1 : len(path)-4]
-			txtList[ID] = data
 		}
 		return nil
 	})
