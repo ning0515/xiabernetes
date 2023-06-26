@@ -43,3 +43,12 @@ go run xiaberctl.go list /operations/1
 5.相对路径依赖cmd运行时所在的目录，需要修改
 6.PR505 watch 和http chunked还不太会
 7.PR356 对kubulet的重构，修改有点多
+8.func NewFIFO() *FIFO {
+f := &FIFO{
+items: map[string]interface{}{},
+queue: []string{},
+}
+f.cond.L = &f.lock
+return f
+}
+需要对这段代码进行测试
