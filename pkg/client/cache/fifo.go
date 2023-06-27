@@ -28,10 +28,10 @@ func (f *FIFO) Delete(ID string) {
 	defer f.lock.Unlock()
 	delete(f.items, ID)
 }
-func (f *FIFO) Get(ID string) (obj interface{}) {
+func (f *FIFO) Get(ID string) (obj interface{}, exists bool) {
 	f.lock.RLock()
 	defer f.lock.RUnlock()
-	obj = f.items[ID]
+	obj, exists = f.items[ID]
 	f.cond.Broadcast()
 	return
 }
