@@ -2,17 +2,15 @@ package main
 
 import (
 	"flag"
-	"github.com/learnk8s/xiabernetes/pkg/apiserver"
-	"github.com/learnk8s/xiabernetes/pkg/registry"
-	"github.com/learnk8s/xiabernetes/pkg/scheduler"
+	"github.com/learnk8s/xiabernetes/pkg/master"
 	"github.com/learnk8s/xiabernetes/pkg/util"
-	"net/http"
 )
 
 var (
 	nodeList         util.StringList
 	port             = flag.Uint("p", 8001, "Listing port")
-	address          = flag.String("a", "127.0.0.1", "The address of api server")
+	address          = flag.String("address", "127.0.0.1", "The address of api server")
+	apiPrefix        = flag.String("api_prefix", "/api/v1beta1", "The prefix for API requests on the server. Default '/api/v1beta1'")
 	specifyScheduler = flag.String("scheduler", "random", "Specify a scheduler")
 )
 
@@ -21,23 +19,6 @@ func init() {
 }
 func main() {
 	flag.Parse()
-	var storage = map[string]apiserver.RESTStorage{}
-	winRegistry := registry.MakeWinRegistry()
-	//增加Scheduler就修改这里
-	if *specifyScheduler == "random" {
-		storage = map[string]apiserver.RESTStorage{
-			"pods":                registry.MakePodRegistry(winRegistry, scheduler.MakeRandomScheduler(nodeList)),
-			"replicateController": registry.MakeControllerRegistry(winRegistry),
-		}
-	} else {
-		storage = map[string]apiserver.RESTStorage{
-			"pods":                registry.MakePodRegistry(winRegistry, scheduler.MakeRandomScheduler(nodeList)),
-			"replicateController": registry.MakeControllerRegistry(winRegistry),
-		}
-	}
-	s := http.Server{
-		Addr:    "127.0.0.1:8001",
-		Handler: apiserver.New(storage),
-	}
-	s.ListenAndServe()
+	m := master.New(nodeList)
+	m.Run(*address, *apiPrefix)
 }

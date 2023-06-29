@@ -5,12 +5,12 @@ import (
 	"github.com/learnk8s/xiabernetes/pkg/labels"
 )
 
-type PodStorage interface {
+type PodRegistry interface {
 	CreatePod(api.Pod, string)
 	ListPod(query labels.Query) []api.Pod
 }
 
-type ControllerStorage interface {
+type ControllerRegistry interface {
 	CreateController(api.ReplicateController)
 	ListController(query labels.Query) []api.ReplicateController
 }

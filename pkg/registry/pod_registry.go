@@ -9,19 +9,19 @@ import (
 	"github.com/learnk8s/xiabernetes/pkg/scheduler"
 )
 
-type PodRegistry struct {
-	storage   PodStorage
+type PodRegistryStorage struct {
+	storage   PodRegistry
 	scheduler scheduler.Scheduler
 }
 
-func MakePodRegistry(storage PodStorage, scheduler scheduler.Scheduler) *PodRegistry {
-	return &PodRegistry{
+func MakePodRegistryStorage(storage PodRegistry, scheduler scheduler.Scheduler) *PodRegistryStorage {
+	return &PodRegistryStorage{
 		storage:   storage,
 		scheduler: scheduler,
 	}
 }
 
-func (t *PodRegistry) Create(pod interface{}) <-chan interface{} {
+func (t *PodRegistryStorage) Create(pod interface{}) <-chan interface{} {
 	newPod := pod.(Pod)
 	return apiserver.MakeAsync(func() interface{} {
 		//time.Sleep(10 * time.Second)
@@ -31,7 +31,7 @@ func (t *PodRegistry) Create(pod interface{}) <-chan interface{} {
 	})
 }
 
-func (t *PodRegistry) List(query labels.Query) interface{} {
+func (t *PodRegistryStorage) List(query labels.Query) interface{} {
 	var result PodList
 	result = PodList{
 		Items: t.storage.ListPod(query),
@@ -40,7 +40,7 @@ func (t *PodRegistry) List(query labels.Query) interface{} {
 	return result
 }
 
-func (t *PodRegistry) Extract(data []byte) interface{} {
+func (t *PodRegistryStorage) Extract(data []byte) interface{} {
 	pod := Pod{}
 	fmt.Printf("in data:\n %v\n", string(data))
 	json.Unmarshal(data, &pod)
