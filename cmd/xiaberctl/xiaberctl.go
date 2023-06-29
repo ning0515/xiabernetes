@@ -60,7 +60,7 @@ func main() {
 	}
 	response, _ := r.Do()
 	fmt.Println(string(response))
-	printer.Print(string(response), os.Stdout)
+	printer.Print(response, os.Stdout)
 
 	//switch method {
 	//case "list":

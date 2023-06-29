@@ -1,7 +1,6 @@
 package xiaberctl
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/learnk8s/xiabernetes/pkg/api"
 	"io"
@@ -9,49 +8,50 @@ import (
 )
 
 type Printer interface {
-	Print(string, io.Writer) error
+	Print([]byte, io.Writer) error
 }
 type HumanReadablePrinter struct {
 }
 
 var podColumn = []string{"Name", "Image", "Label"}
 var controllerColumn = []string{"Name", "replicas", "Label"}
+var statusColumn = []string{"Status"}
 
 func PrintHeader(columnNames []string, w io.Writer) {
 	fmt.Fprintf(w, "%s\n", strings.Join(columnNames, "\t"))
 }
 
-func (hp *HumanReadablePrinter) PrintPod(data string, w io.Writer) {
-	var pods api.PodList
-	json.Unmarshal([]byte(data), &pods)
-	for _, v := range pods.Items {
+func (hp *HumanReadablePrinter) PrintPodList(podList *api.PodList, w io.Writer) {
+	for _, v := range podList.Items {
 		fmt.Fprintf(w, "%s\t%v\t%s\n", v.ID, v.DesiredState.Manifest, v.Labels)
 	}
 }
-func (hp *HumanReadablePrinter) PrintController(data string, w io.Writer) {
-	var controllers api.ReplicateControllerList
-	json.Unmarshal([]byte(data), &controllers)
+func (hp *HumanReadablePrinter) PrintControllerList(controllers *api.ReplicateControllerList, w io.Writer) {
 	for _, v := range controllers.Items {
 		fmt.Fprintf(w, "%s\t%v\t%s\n", v.ID, v.DesiredState.Replicas, v.Labels)
 	}
 }
-func (hp *HumanReadablePrinter) Print(data string, w io.Writer) error {
-	var obj interface{}
-	err := json.Unmarshal([]byte(data), &obj)
+
+func (hp *HumanReadablePrinter) printStatus(status *api.Status, w io.Writer) {
+	PrintHeader(statusColumn, w)
+	fmt.Fprintf(w, "%v\n", status.Status)
+}
+func (hp *HumanReadablePrinter) Print(data []byte, w io.Writer) error {
+	obj, err := api.Decode(data)
 	if err != nil {
 		return err
 	}
-	if _, contains := obj.(map[string]interface{})["kind"]; !contains {
-		return fmt.Errorf("Unexpected object with no 'kind' field: %s", data)
-	}
-	kind := obj.(map[string]interface{})["kind"].(string)
-	switch kind {
-	case "cluster#podList":
+	switch o := obj.(type) {
+	case *api.PodList:
 		PrintHeader(podColumn, w)
-		hp.PrintPod(data, w)
-	case "cluster#replicationControllerList":
+		hp.PrintPodList(o, w)
+	case *api.ReplicateControllerList:
 		PrintHeader(controllerColumn, w)
-		hp.PrintController(data, w)
+		hp.PrintControllerList(o, w)
+	case *api.Status:
+		hp.printStatus(o, w)
+	default:
+		fmt.Println("Wrong type")
 	}
 	return nil
 }
