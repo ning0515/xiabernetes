@@ -48,7 +48,7 @@ func Encode(obj interface{}) (data []byte, err error) {
 	if err != nil {
 		return nil, err
 	}
-	data, err = json.MarshalIndent(obj, "", "	")
+	data, err = json.MarshalIndent(obj, "", "    ")
 	jsonBase.Kind = ""
 	return data, err
 }

@@ -3,6 +3,7 @@ package apiserver
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/learnk8s/xiabernetes/pkg/api"
 	"github.com/learnk8s/xiabernetes/pkg/labels"
 	"github.com/learnk8s/xiabernetes/pkg/util"
 	"io"
@@ -86,7 +87,7 @@ func (server *ApiServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (server *ApiServer) write(statusCode int, object interface{}, w http.ResponseWriter) {
 	w.WriteHeader(statusCode)
-	output, err := json.MarshalIndent(object, "", "    ")
+	output, err := api.Encode(object)
 	if err != nil {
 		log.Fatal(err)
 		return

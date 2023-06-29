@@ -29,8 +29,7 @@ func (c *ControllerRegistryStorage) Create(controller interface{}) <-chan interf
 
 func (c *ControllerRegistryStorage) List(query labels.Query) interface{} {
 	result := api.ReplicateControllerList{
-		JSONBase: api.JSONBase{Kind: "cluster#replicationControllerList"},
-		Items:    c.storage.ListController(query)}
+		Items: c.storage.ListController(query)}
 	return result
 }
 

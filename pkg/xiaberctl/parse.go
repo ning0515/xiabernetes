@@ -1,7 +1,6 @@
 package xiaberctl
 
 import (
-	"encoding/json"
 	"github.com/learnk8s/xiabernetes/pkg/api"
 	"reflect"
 )
@@ -18,11 +17,11 @@ func ToWireFormat(data []byte, storage string) []byte {
 	}
 
 	obj := reflect.New(prototypeType).Interface()
-	err := json.Unmarshal(data, obj)
+	err := api.DecodeInto(data, obj)
 	if err != nil {
 		return nil
 	}
-	data, err = json.Marshal(obj)
+	data, err = api.Encode(obj)
 	if err != nil {
 		return nil
 	}

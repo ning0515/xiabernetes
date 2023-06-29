@@ -36,7 +36,6 @@ func (t *PodRegistryStorage) List(query labels.Query) interface{} {
 	result = PodList{
 		Items: t.storage.ListPod(query),
 	}
-	result.Kind = "cluster#podList"
 	return result
 }
 
