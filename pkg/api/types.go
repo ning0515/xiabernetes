@@ -1,9 +1,9 @@
 package api
 
 type JSONBase struct {
-	Kind       string `json:"kind,omitempty"`
-	ID         string `json:"id,omitempty"`
-	APIVersion string `json:"apiVersion,omitempty"`
+	Kind       string `json:"kind,omitempty" yaml:"kind,omitempty"`
+	ID         string `json:"id,omitempty" yaml:"id,omitempty"`
+	APIVersion string `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
 }
 
 type PodList struct {
@@ -12,35 +12,35 @@ type PodList struct {
 }
 
 type Pod struct {
-	JSONBase
-	Labels       map[string]string `json:"labels,omitempty"`
-	DesiredState PodState          `json:"desiredState,omitempty"`
+	JSONBase     `json:",inline" yaml:",inline"`
+	Labels       map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+	DesiredState PodState          `json:"desiredState,omitempty" yaml:"desiredState,omitempty"`
 }
 
 type PodState struct {
-	Manifest ContainerManifest `json:"manifest,omitempty"`
+	Manifest ContainerManifest `json:"manifest,omitempty" yaml:"manifest,omitempty"`
 }
 
 type ContainerManifest struct {
-	ID         string      `json:"id,omitempty"`
-	Containers []Container `json:"containers,omitempty"`
+	ID         string      `json:"id,omitempty" yaml:"id,omitempty"`
+	Containers []Container `json:"containers,omitempty" yaml:"containers,omitempty"`
 }
 type Container struct {
-	Name  string `json:"name,omitempty"`
-	ID    string `json:"id,omitempty"`
-	Image string `json:"image,omitempty"`
-	Ports []Port `json:"ports,omitempty"`
+	Name  string `json:"name,omitempty" yaml:"name,omitempty"`
+	ID    string `json:"id,omitempty" yaml:"id,omitempty"`
+	Image string `json:"image,omitempty" yaml:"image,omitempty"`
+	Ports []Port `json:"ports,omitempty" yaml:"ports,omitempty"`
 }
 
 type Port struct {
-	ContainerPort int `json:"containerPort,omitempty"`
-	HostPort      int `json:"hostPort,omitempty"`
+	ContainerPort int `json:"containerPort,omitempty" yaml:"containerPort,omitempty"`
+	HostPort      int `json:"hostPort,omitempty" yaml:"hostPort,omitempty"`
 }
 
 type ReplicateController struct {
 	JSONBase
-	Labels       map[string]string        `json:"labels,omitempty"`
-	DesiredState ReplicateControllerState `json:"desiredState,omitempty"`
+	Labels       map[string]string        `json:"labels,omitempty" yaml:"labels,omitempty"`
+	DesiredState ReplicateControllerState `json:"desiredState,omitempty" yaml:"desiredState,omitempty"`
 }
 
 type ReplicateControllerList struct {
@@ -49,14 +49,14 @@ type ReplicateControllerList struct {
 }
 
 type ReplicateControllerState struct {
-	Replicas      int               `json:"replicas,omitempty"`
-	ReplicasInSet map[string]string `json:"replicasInSet,omitempty"`
-	PodTemplate   PodTemplate       `json:"podTemplate,omitempty"`
+	Replicas      int               `json:"replicas,omitempty" yaml:"replicas,omitempty"`
+	ReplicasInSet map[string]string `json:"replicasInSet,omitempty" yaml:"replicasInSet,omitempty"`
+	PodTemplate   PodTemplate       `json:"podTemplate,omitempty" yaml:"podTemplate,omitempty"`
 }
 
 type PodTemplate struct {
-	DesiredState PodState          `json:"desiredState,omitempty"`
-	Labels       map[string]string `json:"labels,omitempty"`
+	DesiredState PodState          `json:"desiredState,omitempty" yaml:"desiredState,omitempty"`
+	Labels       map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
 }
 
 type Status struct {

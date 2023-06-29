@@ -122,7 +122,9 @@ func Decode(data []byte) (interface{}, error) {
 	return obj, nil
 }
 func DecodeInto(data []byte, obj interface{}) error {
+	fmt.Printf("before unmarshal %s\n", data)
 	err := yaml.Unmarshal(data, obj)
+	fmt.Printf("after unmarshal %#v\n", obj)
 	if err != nil {
 		return err
 	}
