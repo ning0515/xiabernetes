@@ -6,7 +6,7 @@ import (
 )
 
 type PodRegistry interface {
-	CreatePod(api.Pod, string)
+	CreatePod(api.Pod, string) error
 	ListPod(query labels.Query) []api.Pod
 }
 

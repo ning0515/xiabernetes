@@ -21,6 +21,8 @@ func init() {
 		ReplicateController{},
 		ReplicateControllerList{},
 		Status{},
+		ServerOp{},
+		ServerOpList{},
 	)
 	AddKnownTypes("v1beta1",
 		v1beta1.PodList{},
@@ -28,6 +30,8 @@ func init() {
 		v1beta1.ReplicateController{},
 		v1beta1.ReplicateControllerList{},
 		v1beta1.Status{},
+		ServerOp{},
+		ServerOpList{},
 	)
 }
 

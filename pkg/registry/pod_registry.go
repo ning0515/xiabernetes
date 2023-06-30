@@ -21,13 +21,16 @@ func MakePodRegistryStorage(storage PodRegistry, scheduler scheduler.Scheduler) 
 	}
 }
 
-func (t *PodRegistryStorage) Create(pod interface{}) <-chan interface{} {
+func (t *PodRegistryStorage) Create(pod interface{}) (<-chan interface{}, error) {
 	newPod := pod.(Pod)
-	return apiserver.MakeAsync(func() interface{} {
+	return apiserver.MakeAsync(func() (interface{}, error) {
 		//time.Sleep(10 * time.Second)
-		t.storage.CreatePod(newPod, t.scheduler.Schedule(newPod))
+		err := t.storage.CreatePod(newPod, t.scheduler.Schedule(newPod))
+		if err != nil {
+			return nil, err
+		}
 		fmt.Println("创建完成")
-		return newPod
+		return newPod, nil
 	})
 }
 

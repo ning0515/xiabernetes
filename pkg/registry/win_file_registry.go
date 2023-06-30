@@ -19,8 +19,15 @@ func MakeWinRegistry() *WinRegistry {
 	return &WinRegistry{manifestFactory: &BasicManifestFactory{}}
 }
 
-func (w *WinRegistry) CreatePod(pod api.Pod, node string) {
+func (w *WinRegistry) CreatePod(pod api.Pod, node string) error {
+	pods := w.ListPod(labels.Everything())
+	for _, v := range pods {
+		if v.ID == pod.ID {
+			return fmt.Errorf("already exists\n")
+		}
+	}
 	w.runPod(pod, node)
+	return nil
 }
 
 func (w *WinRegistry) runPod(pod api.Pod, machine string) {
@@ -69,7 +76,7 @@ func (w *WinRegistry) ListPod(label labels.Query) []api.Pod {
 			pods = append(pods, pod)
 		}
 	}
-	fmt.Printf("%v\n", pods)
+	fmt.Printf("ListPod:\n%v\n", pods)
 	return pods
 }
 

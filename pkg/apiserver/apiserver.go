@@ -19,18 +19,26 @@ type ApiServer struct {
 }
 
 type RESTStorage interface {
-	Create(interface{}) <-chan interface{}
+	Create(interface{}) (<-chan interface{}, error)
 	Extract([]byte) interface{}
 	List(query labels.Query) interface{}
 }
 
-func MakeAsync(fn func() interface{}) <-chan interface{} {
+func MakeAsync(fn func() (interface{}, error)) (<-chan interface{}, error) {
 	channel := make(chan interface{}, 1)
 	go func() {
 		defer util.HandleCrash()
-		channel <- fn()
+		obj, err := fn()
+		if err != nil {
+			channel <- &api.Status{
+				Status:  api.StatusFailure,
+				Details: err.Error(),
+			}
+		} else {
+			channel <- obj
+		}
 	}()
-	return channel
+	return channel, nil
 }
 func New(storage map[string]RESTStorage) *ApiServer {
 	return &ApiServer{
@@ -77,7 +85,11 @@ func (server *ApiServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			req, _ := json.MarshalIndent(server.storage[resource[1]].Extract(data), "", "	")
 			fmt.Printf("%v", string(req))
 			fmt.Println("检验异步效果：提交了创建")
-			out := server.storage[resource[1]].Create(object)
+			out, err := server.storage[resource[1]].Create(object)
+			if err != nil {
+				fmt.Errorf("创建失败\n")
+				return
+			}
 			fmt.Println("检验异步效果：主线程继续向下走")
 			server.finishReq(out, sync, timeout, w)
 		}

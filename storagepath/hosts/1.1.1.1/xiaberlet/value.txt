@@ -1,53 +1,5 @@
 [
 	{
-		"id": "php111",
-		"containers": [
-			{
-				"name": "nginx",
-				"image": "dockerfile/nginx",
-				"ports": [
-					{
-						"containerPort": 80,
-						"hostPort": 8080
-					}
-				]
-			}
-		]
-	},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{
-		"containers": [
-			{
-				"name": "nginx",
-				"image": "dockerfile/nginx",
-				"ports": [
-					{
-						"containerPort": 80,
-						"hostPort": 8080
-					}
-				]
-			}
-		]
-	},
-	{
-		"containers": [
-			{
-				"name": "nginx",
-				"image": "dockerfile/nginx",
-				"ports": [
-					{
-						"containerPort": 80,
-						"hostPort": 8080
-					}
-				]
-			}
-		]
-	},
-	{
 		"id": "php",
 		"containers": [
 			{
@@ -63,21 +15,7 @@
 		]
 	},
 	{
-		"containers": [
-			{
-				"name": "nginx",
-				"image": "dockerfile/nginx",
-				"ports": [
-					{
-						"containerPort": 80,
-						"hostPort": 8080
-					}
-				]
-			}
-		]
-	},
-	{
-		"id": "php",
+		"id": "php2",
 		"containers": [
 			{
 				"name": "nginx",

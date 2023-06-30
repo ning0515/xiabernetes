@@ -39,4 +39,6 @@ func (c *cache) List() []interface{} {
 	return result
 }
 
-//func NewStore() *cache
+func NewStore() Store {
+	return &cache{items: map[string]interface{}{}}
+}

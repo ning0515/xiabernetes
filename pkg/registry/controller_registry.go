@@ -18,12 +18,12 @@ func MakeControllerRegistryStorage(storage ControllerRegistry) *ControllerRegist
 	}
 }
 
-func (c *ControllerRegistryStorage) Create(controller interface{}) <-chan interface{} {
+func (c *ControllerRegistryStorage) Create(controller interface{}) (<-chan interface{}, error) {
 	newController := controller.(api.ReplicateController)
 	c.storage.CreateController(newController)
-	return apiserver.MakeAsync(func() interface{} {
+	return apiserver.MakeAsync(func() (interface{}, error) {
 		c.storage.CreateController(newController)
-		return newController
+		return newController, nil
 	})
 }
 

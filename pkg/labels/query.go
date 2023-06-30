@@ -17,6 +17,9 @@ type notHasTerm struct {
 	label, value string
 }
 
+func Everything() Query {
+	return andTerm{}
+}
 func (h *hasTerm) Matches(labels Labels) bool {
 	return labels.Get(h.label) == h.value
 }
