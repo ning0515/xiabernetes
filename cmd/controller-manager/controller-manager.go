@@ -22,6 +22,8 @@ func init() {
 
 func main() {
 	flag.Parse()
+	util.InitLogs()
+	defer util.FlushLogs()
 	nodeList = append(nodeList, "1.1.1.1")
 	label := map[string]string{"name": "foo"}
 	//client := client.Client{

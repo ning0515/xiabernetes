@@ -3,9 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/learnk8s/golang/glog"
 	"github.com/learnk8s/xiabernetes/pkg/client"
+	"github.com/learnk8s/xiabernetes/pkg/util"
 	"github.com/learnk8s/xiabernetes/pkg/xiaberctl"
-	"log"
 	"os"
 	"strings"
 )
@@ -17,29 +18,32 @@ var (
 )
 
 func usage() {
-	log.Fatal("Usage:xiaberctl -a <address> [-f file.json][-p <hostPort>:<containerPort> <method> <path>]")
+	glog.Info("Usage:xiaberctl -a <address> [-f file.json][-p <hostPort>:<containerPort> <method> <path>]")
 }
 
 func readConfig(storage string) []byte {
 	if len(*file) == 0 {
-		log.Fatal("Need config file (-c)")
+		glog.Fatal("Need config file (-c)")
 	}
 	data, err := os.ReadFile(*file)
 	if err != nil {
-		log.Fatalf("Unable to read %v: %#v\n", *file, err)
+		glog.Fatalf("Unable to read %v: %#v\n", *file, err)
 	}
 	data = xiaberctl.ToWireFormat(data, storage)
 	if err != nil {
-		log.Fatalf("Error parsing %v as an object for %v: %#v\n", *file, storage, err)
+		glog.Fatalf("Error parsing %v as an object for %v: %#v\n", *file, storage, err)
 	}
-	log.Printf("Parsed config file successfully; sending:\n%v\n", string(data))
+	glog.Infof("Parsed config file successfully; sending:\n%v\n", string(data))
 	return data
 }
 
 func main() {
 	flag.Parse()
+	util.InitLogs()
+	defer util.FlushLogs()
 	if flag.NArg() < 2 {
 		usage()
+		os.Exit(1)
 	}
 	printer := &xiaberctl.HumanReadablePrinter{}
 	method := flag.Arg(0)

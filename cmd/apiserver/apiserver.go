@@ -19,6 +19,8 @@ func init() {
 }
 func main() {
 	flag.Parse()
+	util.InitLogs()
+	defer util.FlushLogs()
 	m := master.New(nodeList)
 	m.Run(*address, *apiPrefix)
 }
