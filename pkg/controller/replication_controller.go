@@ -1,20 +1,21 @@
-package registry
+package controller
 
 import (
 	"fmt"
 	"github.com/learnk8s/xiabernetes/pkg/api"
 	"github.com/learnk8s/xiabernetes/pkg/client"
+	registry2 "github.com/learnk8s/xiabernetes/pkg/registry"
 	"github.com/learnk8s/xiabernetes/pkg/scheduler"
 	"math/rand"
 )
 
 type ReplicationManager struct {
-	registry  WinRegistry
+	registry  registry2.WinRegistry
 	scheduler scheduler.Scheduler
 	client    client.ClientInterface
 }
 
-func MakeReplicateManager(registry WinRegistry, scheduler scheduler.Scheduler, client client.ClientInterface) *ReplicationManager {
+func MakeReplicateManager(registry registry2.WinRegistry, scheduler scheduler.Scheduler, client client.ClientInterface) *ReplicationManager {
 	return &ReplicationManager{
 		registry:  registry,
 		scheduler: scheduler,

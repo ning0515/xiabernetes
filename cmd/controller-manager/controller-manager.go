@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/learnk8s/xiabernetes/pkg/client"
+	"github.com/learnk8s/xiabernetes/pkg/controller"
 	"github.com/learnk8s/xiabernetes/pkg/registry"
 	"github.com/learnk8s/xiabernetes/pkg/scheduler"
 	"github.com/learnk8s/xiabernetes/pkg/util"
@@ -29,7 +30,7 @@ func main() {
 	//}
 	client := client.New("http://" + *apiServer)
 	client.ListPods(label)
-	controllerManager := registry.MakeReplicateManager(*registry.MakeWinRegistry(), scheduler.MakeRandomScheduler(nodeList), client)
+	controllerManager := controller.MakeReplicateManager(*registry.MakeWinRegistry(), scheduler.MakeRandomScheduler(nodeList), client)
 
 	go util.Forever(func() { controllerManager.Sync() }, 1*time.Second)
 	select {}
