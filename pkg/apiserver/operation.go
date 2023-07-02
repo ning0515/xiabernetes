@@ -98,7 +98,7 @@ func (op *Operation) StatusOrResult() (description interface{}, finished bool) {
 	if op.finished == nil {
 		return api.Status{
 			Status:  api.StatusWorking,
-			Details: "ID=" + op.ID,
+			Details: op.ID,
 		}, false
 	}
 	return op.result, true

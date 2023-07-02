@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"fmt"
+	"github.com/learnk8s/xiabernetes/pkg/api"
 	"io"
 	"net/http"
 	"net/url"
@@ -12,9 +13,10 @@ import (
 
 func (c *Client) Verb(verb string) *Request {
 	return &Request{
-		verb: verb,
-		c:    c,
-		path: "/",
+		verb:       verb,
+		c:          c,
+		path:       "/",
+		pollPeriod: 1 * time.Second,
 	}
 }
 
@@ -37,6 +39,12 @@ func (c *Client) Delete() *Request {
 	return c.Verb("DELETE")
 }
 
+func (c *Client) PollFor(operationId string) *Request {
+	r := c.Get().Path("operations").Path(operationId).PollPeriod(0)
+	fmt.Println("url是：" + r.path)
+	return r
+}
+
 type Request struct {
 	c    *Client
 	err  error
@@ -44,8 +52,9 @@ type Request struct {
 	path string
 	body []byte
 	//query   labels.Query
-	query   string
-	timeout time.Duration
+	query      string
+	timeout    time.Duration
+	pollPeriod time.Duration
 }
 
 func (r *Request) Path(item string) *Request {
@@ -73,25 +82,39 @@ func (r *Request) Body(obj []byte) *Request {
 	return r
 }
 
+func (r *Request) PollPeriod(time time.Duration) *Request {
+	if r.err != nil {
+		return r
+	}
+	r.pollPeriod = time
+	return r
+}
 func (r *Request) Do() ([]byte, error) {
-	query := url.Values{}
-	finalUrl := r.c.host + r.path
-	if r.query != "" {
-		query.Add("labels", r.query)
+	for {
+		query := url.Values{}
+		finalUrl := r.c.host + r.path
+		if r.query != "" {
+			query.Add("labels", r.query)
+		}
+		finalUrl += "?" + query.Encode()
+		var body io.Reader
+		if r.body != nil {
+			body = bytes.NewBuffer(r.body)
+		}
+		req, _ := http.NewRequest(r.verb, finalUrl, body)
+		result, err := r.c.doRequest(req)
+		if err != nil {
+			if statusErr, ok := err.(*StatusErr); ok {
+				if statusErr.Status.Status == api.StatusWorking && r.pollPeriod != 0 {
+					time.Sleep(r.pollPeriod)
+					// Make a poll request
+					pollOp := r.c.PollFor(statusErr.Status.Details).PollPeriod(r.pollPeriod)
+					// Could also say "return r.Do()" but this way doesn't grow the callstack.
+					r = pollOp
+					continue
+				}
+			}
+		}
+		return result, err
 	}
-	finalUrl += "?" + query.Encode()
-	var body io.Reader
-	if r.body != nil {
-		body = bytes.NewBuffer(r.body)
-	}
-	req, _ := http.NewRequest(r.verb, finalUrl, body)
-	client := &http.Client{}
-	response, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-	defer response.Body.Close()
-	result, _ := io.ReadAll(response.Body)
-	return result, err
 }

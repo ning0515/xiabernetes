@@ -128,12 +128,10 @@ func (server *ApiServer) handleOperationRequest(parts []string, w http.ResponseW
 	}
 	if len(parts) == 0 {
 		list := server.ops.List()
-		//fmt.Printf("22223%v\n", list)
 		server.write(http.StatusOK, list, w)
 		return
 	}
 	op := server.ops.Get(parts[0])
-	//fmt.Print("%v", op)
 	if op == nil {
 		w.WriteHeader(http.StatusNotFound)
 		return

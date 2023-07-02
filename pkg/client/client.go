@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/learnk8s/xiabernetes/pkg/api"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -38,6 +39,29 @@ func New(host string) *Client {
 			},
 		},
 	}
+}
+
+func (c *Client) doRequest(request *http.Request) ([]byte, error) {
+	response, err := c.httpClient.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		return body, err
+	}
+	// If the server gave us a status back, look at what it was.
+	var status api.Status
+	if err := api.DecodeInto(body, &status); err == nil && status.Status != "" {
+		if status.Status == api.StatusSuccess {
+			return body, nil
+		}
+		// "Working" requests need to be handled specially.
+		// "Failed" requests are clearly just an error and it makes sense to return them as such.
+		return nil, &StatusErr{status}
+	}
+	return body, err
 }
 
 func (c *Client) ListPods(label map[string]string) api.PodList {
